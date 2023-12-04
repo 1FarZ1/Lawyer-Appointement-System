@@ -16,42 +16,25 @@ class UserDto(BaseModel):
     password: str
 
 app = FastAPI()
-## hasher
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-fake_Users_db = [
-        User(
-            username="user1",
-            email= "user1@gmail.com",
-            hashed_password= "@user1"
-        )
-        ,
-        User(
-            username="user2",
-            email= "user2@gmail.com",
-            hashed_password= "@user2"),
-]
 
 ## Entry Point
 @app.get("/")
 async def root():
     return {
-        "message": "Hel!"
+        "message": "Hello world!"
   }
 
 ## Login User
 @app.post('/api/auth/login')
 async def login(UserDto: UserDto):
-    isUserExist = None
-    for user in fake_Users_db:
-        if user.username == UserDto.username:
-            isUserExist = user
-            break
+    isUserExist = db.query(User).filter(User.username == UserDto.username).first()
     if not isUserExist:
         return {"error": "Invalid User"}
-
-    isPasswordCorrect = pwd_context.verify(UserDto.password, isUserExist.hashed_password)  
+    
+    # isPasswordCorrect = pwd_context.verify(UserDto.password, isUserExist.hashed_password)
+    isPasswordCorrect = UserDto.password == isUserExist.hashed_password
     if not isPasswordCorrect:
         return {"error": "Invalid Password"}
 
@@ -69,34 +52,37 @@ async def login(UserDto: UserDto):
 ## Register User
 @app.post('/api/auth/register')
 async def register(UserDto: UserDto):
-    password  = pwd_context.hash(UserDto.password)
-    # fake_Users_db.append(User(
-    #     username=UserDto.username,
-    #     email=UserDto.username,
-    #     hashed_password=password
-    # ))
-    ## verify if user already exist in database sql
-    # isUserExist = db.query(User).filter(User.username == UserDto.username).first()
-    
-    
-    
-    newUser = User(
-        username=UserDto.username,
-        email=UserDto.username,
-        hashed_password=password
-    )
-    db.add(newUser)
-    db.commit()
-    
-    return  {
-        "message": "User Created",
-        "status": 201,
-    }
+   try :
+       user = User(
+           username=UserDto.username,
+           email=UserDto.username,
+           hashed_password=UserDto.password)
+       db.add(user)
+       db.commit()
+       db.refresh(user)
+       return {
+           "message": "User Created",
+           "username": user.username,
+           "email": user.email,
+           
+       }
+   except Exception as e:
+         return {"error": str(e)}
 
 
 
 ## get All Users
 @app.get("/users")
 async def get_users():
-    result = db.query(User).all() 
+    result:List[User] = db.query(User).all() 
     return result
+
+
+
+
+
+def hash_password(password):
+    return pwd_context.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)

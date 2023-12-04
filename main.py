@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 from models import User
 
 from pydantic import BaseModel
+from database import engine
 
 
 class UserDto(BaseModel):
@@ -100,6 +101,9 @@ async def register(UserDto: UserDto):
 ## get All Users
 @app.get("/users")
 async def get_users():
+    result = engine.execute("select * from Users")
+    for row in result:
+        print(row)
     return fake_Users_db
 
 

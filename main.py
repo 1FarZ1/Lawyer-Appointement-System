@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException
 from passlib.context import CryptContext
 
 from models import User 
@@ -6,6 +6,8 @@ import models
 
 from database import engine , SessionLocal
 from dto import UserDto
+
+
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -26,12 +28,15 @@ async def root():
 async def login(UserDto: UserDto):
     isUserExist = db.query(User).filter(User.username == UserDto.username).first()
     if not isUserExist:
-        return {"error": "Invalid User"}
-    
+        raise HTTPException(
+            status_code=401, detail="Incorrect username"
+        )
     # isPasswordCorrect = pwd_context.verify(UserDto.password, isUserExist.hashed_password)
     isPasswordCorrect = UserDto.password == isUserExist.hashed_password
     if not isPasswordCorrect:
-        return {"error": "Invalid Password"}
+        raise HTTPException(
+            status_code=401, detail="Incorrect password"
+        )
 
     return {
         "message": "User Logged In",
@@ -76,8 +81,11 @@ async def get_users():
 async def get_user(id: int):
     result:User = db.query(User).filter(User.id == id).first()
     if not result:
-        return {"error": "User Not Found"}
+        raise HTTPException(
+            status_code=404, detail="User not found"
+        )
     return result
+  
 
 
 

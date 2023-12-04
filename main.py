@@ -4,29 +4,24 @@ from passlib.context import CryptContext
 from models import User 
 import models
 
-from pydantic import BaseModel
 from database import engine , SessionLocal
+from dto import UserDto
 
 models.Base.metadata.create_all(bind=engine)
 
 
 db = SessionLocal()
-class UserDto(BaseModel):
-    username: str
-    password: str
 
 app = FastAPI()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-## Entry Point
 @app.get("/")
 async def root():
     return {
-        "message": "Hello world!"
+        "message": "Project Gl Entry Point !"
   }
 
-## Login User
 @app.post('/api/auth/login')
 async def login(UserDto: UserDto):
     isUserExist = db.query(User).filter(User.username == UserDto.username).first()
@@ -41,8 +36,7 @@ async def login(UserDto: UserDto):
     return {
         "message": "User Logged In",
         "username": isUserExist.username,
-        "email": isUserExist.email,
-        
+        "email": isUserExist.email    
     }
 
 
@@ -77,6 +71,13 @@ async def get_users():
     result:List[User] = db.query(User).all() 
     return result
 
+## get User By Id
+@app.get("/users/{id}")
+async def get_user(id: int):
+    result:User = db.query(User).filter(User.id == id).first()
+    if not result:
+        return {"error": "User Not Found"}
+    return result
 
 
 

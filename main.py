@@ -1,24 +1,21 @@
 from fastapi import FastAPI
 from passlib.context import CryptContext
 
-from models import User
+from models import User 
+import models
 
 from pydantic import BaseModel
-from database import engine
+from database import engine , SessionLocal
+
+models.Base.metadata.create_all(bind=engine)
 
 
+db = SessionLocal()
 class UserDto(BaseModel):
     username: str
     password: str
 
-# from database import Base, engine
-
 app = FastAPI()
-
-
-# Base.metadata.create_all(bind=engine)
-
-
 ## hasher
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -36,29 +33,16 @@ fake_Users_db = [
             hashed_password= "@user2"),
 ]
 
-
-
-
 ## Entry Point
 @app.get("/")
-async def index():
-    # result = engine.execute("select * from Users")
-    # for row in result:
-    #     print(row)
+async def root():
     return {
-        "message": "Hello, world!"
+        "message": "Hel!"
   }
-
-
-@app.get
-
-
-
 
 ## Login User
 @app.post('/api/auth/login')
 async def login(UserDto: UserDto):
-    ## check if user exist in our fake users db
     isUserExist = None
     for user in fake_Users_db:
         if user.username == UserDto.username:
@@ -86,14 +70,27 @@ async def login(UserDto: UserDto):
 @app.post('/api/auth/register')
 async def register(UserDto: UserDto):
     password  = pwd_context.hash(UserDto.password)
-    fake_Users_db.append(User(
+    # fake_Users_db.append(User(
+    #     username=UserDto.username,
+    #     email=UserDto.username,
+    #     hashed_password=password
+    # ))
+    ## verify if user already exist in database sql
+    # isUserExist = db.query(User).filter(User.username == UserDto.username).first()
+    
+    
+    
+    newUser = User(
         username=UserDto.username,
         email=UserDto.username,
         hashed_password=password
-    ))
+    )
+    db.add(newUser)
+    db.commit()
+    
     return  {
         "message": "User Created",
-        "User": fake_Users_db[-1]
+        "status": 201,
     }
 
 
@@ -101,27 +98,5 @@ async def register(UserDto: UserDto):
 ## get All Users
 @app.get("/users")
 async def get_users():
-    result = engine.execute("select * from Users")
-    for row in result:
-        print(row)
-    return fake_Users_db
-
-
-
-### Item API
-# @app.post("/items/")
-# async def create_item(item: Item):
-#     return item
-# @app.get("/api/sum")
-# async def sum(a: int, b: int):
-#     return {
-#         "result": a + b
-#     }
-## give me a fucntion to inverse a string 
-# def inverse_string(string):
-#     return string[::-1]
-
-
-# @app.get("/api/inverse")
-# async def inverse(string: str):
-#     return inverse_string(string)
+    result = db.query(User).all() 
+    return result

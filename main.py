@@ -10,29 +10,16 @@ from dto import UserDto
 from app.utils.hash import hash_password
 
 from typing import List
-import logging
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
-from app.v1.routers import auth
-
-
-
-
-async def custom_logger(request: Request, call_next):
-    logger.info(f"Request received: {request.method} - {request.url}")
-    response = await call_next(request)
-    logger.info(f"Response status code: {response.status_code}")
-    return response
-
+from app.v1.routers import auth,users
+from app.logger import logger,custom_logger
 
 models.Base.metadata.create_all(bind=engine)
 db = SessionLocal()
-
 app = FastAPI()
-
 app.include_router(auth.router)
+app.include_router(users.router)
+
+
 
 @app.middleware("http")
 async def add_logger(request: Request, call_next):

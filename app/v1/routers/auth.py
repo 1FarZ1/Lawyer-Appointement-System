@@ -1,9 +1,18 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
-from fastapi import Request
-from app.schemes.user import UserDto
+# from fastapi import Request
+from app.schemas.user import UserDto
 from app.models.user import User
+from authlib.integrations.starlette_client import OAuth, OAuthError
+from fastapi.middleware import Middleware
+from starlette.requests import Request
+from starlette.middleware.sessions import SessionMiddleware
+
+
+
+
+
 
 router = APIRouter(
     prefix="/api/auth",
@@ -11,6 +20,17 @@ router = APIRouter(
 
 
 
+oauth = OAuth()
+oauth.register(
+    name='google',
+    client_id='532245387058-56rmhp2p0bfbv628s8n1plvm71oeg5lt.apps.googleusercontent.com',
+    client_secret='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',
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile',
+    },
+    
+)
 
 
 ##TODO:fix this 
@@ -62,10 +82,8 @@ async def register(UserDto: UserDto):
 
 
 
-@router.post("/google-auth")
-async def google_auth():
-    return JSONResponse({
-        "message": "Auth Google",
-        "status_code": 200,
-    })
+@router.get("/google-auth")
+async def google_auth(request: Request):
+    return await oauth.google.authorize_redirect(request, "http://localhost:8000/auth")
+
 

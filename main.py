@@ -2,16 +2,21 @@ from fastapi import FastAPI,HTTPException,Request
 from fastapi.middleware import Middleware
 from fastapi.responses import JSONResponse
 from app.config.database import engine , SessionLocal
-import models
-from app.schemes.user import UserDto
+import app.models.user as models
+from app.schemas.user import UserDto
 from app.utils.hash import hash_password
 from typing import List
 from app.v1.routers import auth,users
 from app.utils.logger import logger,custom_logger
+from starlette.middleware.sessions import SessionMiddleware
+
+
 
 models.Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="!secret")
+
 app.include_router(auth.router)
 app.include_router(users.router)
 
@@ -45,6 +50,13 @@ async def auth_middleware(request: Request, call_next):
 async def root():
     return JSONResponse({
         "message": "Welcome to FastAPI",
+      
+    })
+    
+@app.get("/auth")
+async def root():
+    return JSONResponse({
+        "message": "Welcome to FastAPI from google",
       
     })
     

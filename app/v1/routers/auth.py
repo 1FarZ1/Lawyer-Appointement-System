@@ -2,9 +2,8 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from fastapi import Request
-from dto import UserDto
-
-
+from app.schemes.user import UserDto
+from app.models.user import User
 
 router = APIRouter(
     prefix="/api/auth",
@@ -59,6 +58,9 @@ async def register(UserDto: UserDto):
            "status_code": 500,
               "error": str(e),
          })
+
+
+
 
 @router.post("/google-auth")
 async def google_auth():

@@ -1,17 +1,13 @@
 from fastapi import FastAPI,HTTPException,Request
 from fastapi.middleware import Middleware
 from fastapi.responses import JSONResponse
-from models import User 
+from app.config.database import engine , SessionLocal
 import models
-
-from database import engine , SessionLocal
-from dto import UserDto
-
+from app.schemes.user import UserDto
 from app.utils.hash import hash_password
-
 from typing import List
 from app.v1.routers import auth,users
-from app.logger import logger,custom_logger
+from app.utils.logger import logger,custom_logger
 
 models.Base.metadata.create_all(bind=engine)
 db = SessionLocal()
@@ -33,12 +29,17 @@ async def auth_middleware(request: Request, call_next):
 
     token = request.headers["Authorization"].replace("Bearer ", "")
 
-    # if token not in fake_users_db:
-    #     raise HTTPException(status_code=403, detail="Invalid token")
-    
+    ##TODO:check db if token is valid and user is active
+    # user = db.query(User).filter(User.token == token).first()
     logger.info(f"Token: {token}")
     response = await call_next(request)
     return response
+# @app.middleware("http")
+# async def apply_auth_middleware(request: Request, call_next):
+#     if request.url.path.startswith("/users"):
+#         return await auth_middleware(request, call_next)
+#     return await call_next(request)
+
 
 @app.get("/")
 async def root():
@@ -47,12 +48,6 @@ async def root():
       
     })
     
-
-# @app.middleware("http")
-# async def apply_auth_middleware(request: Request, call_next):
-#     if request.url.path.startswith("/users"):
-#         return await auth_middleware(request, call_next)
-#     return await call_next(request)
 
 
 

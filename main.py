@@ -3,7 +3,7 @@ from fastapi.middleware import Middleware
 from fastapi.responses import JSONResponse
 from app.config.database import engine , SessionLocal
 import app.models.user as models
-from app.v1.routers import auth,users
+from app.v1.routers import auth,users,lawyer
 from app.utils.logger import logger,custom_logger
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -13,6 +13,7 @@ app.add_middleware(SessionMiddleware, secret_key="!secret")
 
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(lawyer.router)
 
 @app.get("/")
 async def root():
@@ -20,10 +21,6 @@ async def root():
         "message": "Welcome to FastAPI", 
     })
     
-
-
-
-
 
 # @app.middleware("http")
 # async def add_logger(request: Request, call_next):

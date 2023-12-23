@@ -84,6 +84,15 @@ async def register(UserDto: UserDto):
 
 @router.get("/google-auth")
 async def google_auth(request: Request):
-    return await oauth.google.authorize_redirect(request, "http://localhost:8000/auth")
+    return await oauth.google.authorize_redirect(request, "http://localhost:8000/api/auth/google-auth-callback")
 
 
+@router.get("/google-auth-callback")
+async def root(request: Request):
+    token = await oauth.google.authorize_access_token(request)
+    return JSONResponse({
+        "message": "Welcome to FastAPI from google",
+        "token": token
+      
+    })
+    

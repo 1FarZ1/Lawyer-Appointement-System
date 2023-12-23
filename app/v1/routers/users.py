@@ -2,11 +2,13 @@ from fastapi import APIRouter
 from app.models.user import User
 from app.config.database import db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/api/users",
+)
 
 
 # get All Users
-@router.get("/users")
+@router.get("/")
 async def get_users():
     result:List[User] = db.query(User).all() 
     return result

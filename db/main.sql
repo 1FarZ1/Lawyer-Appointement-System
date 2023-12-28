@@ -1,9 +1,14 @@
-SELECT * FROM users
+SELECT * FROM user
 
 --  get lawyers
 
-SELECT * FROM lawyers
+SELECT * FROM lawyer
 
+
+DROP TABLE users
+
+
+DROP Table  
 
 -- GET THE categories of the lawyers
 SELECT categories.name FROM lawyers JOIN categories ON lawyers.categories_id = categories.id
@@ -28,15 +33,19 @@ SELECT categories.name FROM lawyers JOIN categories ON lawyers.categories_id = c
 --    longitude = Column(Float)
 --    latitude = Column(Float)
 
-INSERT INTO lawyers (name, fname, email, phone, address, description, avocat_image, schedule, rating, comments, social, wilaya, longitude, latitude, categories_id)
+INSERT INTO lawyer (phone, address, description, avocat_image, rating, social, wilaya, longitude, latitude, categories_id, user_id)
 VALUES
-    ('Jane', 'Smith', 'janesmith@example.com', '987-654-3210', '456 Elm St, Anytown, CA', 'Expert in criminal defense and personal injury', 'https://example.com/lawyer-image2.jpg', 1, 4.8, 1, 'https://facebook.com/janesmith', 'Oran', 35.6953, -0.6335,1),
-    ('Peter', 'Johnson', 'peterjohnson@example.com', '555-1212', '789 Oak St, Anytown, CA', 'Specializes in business law and estate planning', 'https://example.com/lawyer-image3.jpg', 2, 4.2, 2, 'https://facebook.com/peterjohnson', 'Annaba', 36.9054, 7.7559,2),
-    ('Maria', 'Garcia', 'mariagarcia@example.com', '444-5555', '901 Pine St, Anytown, CA', 'Helping clients with immigration and employment law issues', 'https://example.com/lawyer-image4.jpg', 3, 3.9, 3, 'https://facebook.com/mariagarcia', 'Constantine', 36.3650, 6.6150,3),
-    ('David', 'Lee', 'davidlee@example.com', '333-6666', '102 Birch St, Anytown, CA', 'Experienced in intellectual property and real estate law', 'https://example.com/lawyer-image5.jpg', 4, 4.7, 4, 'https://facebook.com/davidlee', 'Tlemcen', 34.8758, -1.3154,4),
-    ('Emily', 'Wang', 'emilywang@example.com', '222-7777', '113 Maple St, Anytown, CA', 'Providing legal counsel for businesses and individuals', 'https://example.com/lawyer-image6.jpg', 5, 4.1,5 , 'https://facebook.com/emilywang', 'Sétif', 36.1919, 5.4154,5)
+    ('987-654-3210','456 Elm St, Anytown, CA', 'Expert in criminal defense and personal injury', 'https://example.com/lawyer-image2.jpg', 4.8,  'https://facebook.com/janesmith', 'Oran', 35.6953, -0.6335,1,1),
+    ( '555-1212', '789 Oak St, Anytown, CA', 'Specializes in business law and estate planning', 'https://example.com/lawyer-image3.jpg', 4.2,  'https://facebook.com/peterjohnson', 'Annaba', 36.9054, 7.7559,1,6);
+    -- ('444-5555', '901 Pine St, Anytown, CA', 'Helping clients with immigration and employment law issues', 'https://example.com/lawyer-image4.jpg', 3.9,  'https://facebook.com/mariagarcia', 'Constantine', 36.3650, 6.6150,3),
+    -- ( '333-6666', '102 Birch St, Anytown, CA', 'Experienced in intellectual property and real estate law', 'https://example.com/lawyer-image5.jpg', 4.7,  'https://facebook.com/davidlee', 'Tlemcen', 34.8758, -1.3154,4),
+    -- ( '222-7777', '113 Maple St, Anytown, CA', 'Providing legal counsel for businesses and individuals', 'https://example.com/lawyer-image6.jpg', 4.1, 'https://facebook.com/emilywang', 'Sétif', 36.1919, 5.4154,5)
 
 
+
+
+--  insert some users , here is the SCHEMA
+INSERT INTO user (id,fname,lname,email,hashed_password)
 
 
 -- REMOVE all the rows in the lawyers table
@@ -99,11 +108,11 @@ DELETE FROM lawyers
 
 --  create table categories
 
-CREATE TABLE categories (
-    id INTEGER NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id)
-);
+-- CREATE TABLE categories (
+--     id INTEGER NOT NULL,
+--     name VARCHAR(50) NOT NULL,
+--     PRIMARY KEY (id)
+-- );
 
 -- and now change the categories column in lawyers table to be a foreign key to categories table
 
@@ -155,3 +164,60 @@ SELECT * FROM schedules
 
 
 
+
+
+CREATE TABLE reviews (
+    id INTEGER NOT NULL,
+    lawyer_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    rating INTEGER NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(lawyer_id) REFERENCES lawyers (id),
+    FOREIGN KEY(user_id) REFERENCES users (id)
+);
+
+
+-- insert some reviews , used id i have are 1,6,8,9  and lawyerrs id : 22,23,24,25,26,27,33,34,35
+
+INSERT INTO reviews (id, lawyer_id, user_id, rating, description)
+VALUES
+    (1, 22, 1, 5, 'Great lawyer, very knowledgeable'),
+    (2, 23, 1, 4, 'I would recommend this lawyer'),
+    (3, 24, 1, 3, 'I would not recommend this lawyer'),
+    (4, 25, 1, 5, 'Great lawyer, very knowledgeable'),
+    (5, 26, 1, 4, 'I would recommend this lawyer'),
+    (6, 27, 1, 3, 'I would not recommend this lawyer'),
+    (7, 33, 1, 5, 'Great lawyer, very knowledgeable'),
+    (8, 34, 1, 4, 'I would recommend this lawyer'),
+    (9, 35, 1, 3, 'I would not recommend this lawyer'),
+    (10, 22, 6, 5, 'Great lawyer, very knowledgeable'),
+    (11, 23, 6, 4, 'I would recommend this lawyer'),
+    (12, 24, 6, 3, 'I would not recommend this lawyer'),
+    (13, 25, 6, 5, 'Great lawyer, very knowledgeable'),
+    (14, 26, 6, 4, 'I would recommend this lawyer'),
+    (15, 27, 6, 3, 'I would not recommend this lawyer'),
+    (16, 33, 6, 5, 'Great lawyer, very knowledgeable'),
+    (17, 34, 6, 4, 'I would recommend this lawyer'),
+    (18, 35, 6, 3, 'I would not recommend this lawyer'),
+    (19, 22, 8, 5, 'Great lawyer, very knowledgeable'),
+    (20, 23, 8, 4, 'I would recommend this lawyer'),
+    (21, 24, 8, 3, 'I would not recommend this lawyer'),
+    (22, 25, 8, 5, 'Great lawyer, very knowledgeable'),
+    (23, 26, 8, 4, 'I would recommend this lawyer'),
+    (24, 27, 8, 3, 'I would not recommend this lawyer'),
+    (25, 33, 8, 5, 'Great lawyer, very knowledgeable'),
+    (26, 34, 8, 4, 'I would recommend this lawyer'),
+    (27, 35, 8, 3, 'I would not recommend this lawyer'),
+    (28, 22, 9, 5, 'Great lawyer, very knowledgeable'),
+    (29, 23, 9, 4, 'I would recommend this lawyer'),
+    (30, 24, 9, 3, 'I would not recommend this lawyer'),
+    (31, 25, 9, 5, 'Great lawyer, very knowledgeable'),
+    (32, 26, 9, 4, 'I would recommend this lawyer'),
+    (33, 27, 9, 3, 'I would not recommend this lawyer'),
+    (34, 33, 9, 5, 'Great lawyer, very knowledgeable'),
+    (35, 34, 9, 4, 'I would recommend this lawyer'),
+    (36, 35, 9, 3, 'I would not recommend this lawyer');
+
+
+SELECT * FROM reviews

@@ -1,4 +1,4 @@
-from fastapi import APIRouter,File,UploadFile
+from fastapi import APIRouter, Depends,File,UploadFile
 from app.models.user import User
 from app.config.database import get_db
 from app.models.user import User
@@ -9,7 +9,7 @@ from app.schemas.user import UserDto
 import datetime
 
 
-from app.repository.user import UserRepository
+from app.repository import user as userRepo
 
 
 db = get_db()
@@ -32,14 +32,20 @@ def saveFileToUploads(image) -> dict:
         "path": imagePath
     }
 
-userRepo = UserRepository(db)
 
 
-# get All Users
 @router.get("/")
-async def get_users():
-    result:List[User] = userRepo.get_all_users()
+async def get_users(
+    page: int = 0, pageSize: int = 100, 
+    db = Depends(get_db)
+):
+    result:List[User] = userRepo.get_all_users(
+        db,page, pageSize
+    )
     return result
+
+
+
 
 @router.get("/{id}")
 async def get_user(id: int):

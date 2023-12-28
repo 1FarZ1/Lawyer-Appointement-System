@@ -1,13 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from fastapi import HTTPException
-# from fastapi import Request
 from app.schemas.user import UserDto
 from app.models.user import User
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from fastapi.middleware import Middleware
 from starlette.requests import Request
-from starlette.middleware.sessions import SessionMiddleware
+from app.config.database import get_db
+from app.repository import user as userRepo,auth as authRepo
 
 
 
@@ -35,7 +33,7 @@ oauth.register(
 
 ##TODO:fix this 
 @router.post('/login')
-async def login(UserDto: UserDto):
+async def login(UserDto: UserDto, db = Depends(get_db)):
     isUserExist = db.query(User).filter(User.username == UserDto.username).first()
     if not isUserExist:
         raise HTTPException(
@@ -57,22 +55,22 @@ async def login(UserDto: UserDto):
 
 ## Register User
 @router.post('/register')
-async def register(UserDto: UserDto):
-   try :
-       user = User(
-           username=UserDto.username,
-           email=UserDto.username,
-           hashed_password=UserDto.password)
-       db.add(user)
-       db.commit()
-       db.refresh(user)
-       return JSONResponse({
-           "message": "User Created",
-           "email": user.email,
-           "username": user.username,
-           "status_code": 201,
-       })
-   except Exception as e:
+async def register(userDto: UserDto, db = Depends(get_db)):
+    try :
+        isUserExist =   userRepo.check_username(db,userDto.username)
+        if isUserExist:
+            raise HTTPException(
+                      status_code=401, detail="Username already exist"
+                  )
+        userDto.password = authRepo.hash_password(userDto.password)
+        user  =  authRepo.create_user(db,userDto)
+        return JSONResponse({
+            "message": "User Created",
+            "email": user.email,
+            "username": user.username,
+            "status_code": 201,
+        })
+    except Exception as e:
          return JSONResponse({
            "message": "something went wrong",
            "status_code": 500,
@@ -95,7 +93,7 @@ async def root(request: Request):
         return JSONResponse({
         "message": "Welcome to FastAPI from google",
         "token": token
-      
+    
              })
     except (OAuthError) as e:
         return JSONResponse({

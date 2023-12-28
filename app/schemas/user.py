@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 
 class UserDto(BaseModel):
-    username: str
+    fname: str
+    lname: str
     email: str
     password: str
+    

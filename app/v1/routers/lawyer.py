@@ -1,19 +1,16 @@
 
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List
+import random
+import json
+from app.models.lawyer import Lawyer
+from app.repository.lawyer import LawyerRepository
+from app.config.database import get_db
 
 
-def getLawyers(index):
-    return {
-        "id": index,
-        "name": "Fares",
-        "email": f"Fares{index}@gmail.com",
-        "rating": index % 5 + 0.5,
-        "reviews": index % 10000,
-        }
 
 
-db_lawyers = [ getLawyers(i) for i in range(100)]
 
 
 router = APIRouter(
@@ -25,23 +22,42 @@ router = APIRouter(
 
 
 
+db = get_db()
+lawyerRepo : LawyerRepository = LawyerRepository(db)
+
+
 @router.get("/")
-async def get_lawyers(
-    page: int = 0, pageSize: int = 10,
-):
-    return db_lawyers[page * pageSize : (page + 1) * pageSize]
+async def get_lawyers(page: int = 0, pageSize: int = 10,):
+    result:List[Lawyer] = lawyerRepo.get_all_lawyers(page, pageSize)
+    return result
+
+
+
+@router.get("/reviews")
+async def get_reviews():
+    return {
+        "message":"not implemented yet"
+    }
+
+
+@router.get("/highest_rated")
+async def get_highest_rated(limit: int = 4):
+    return lawyerRepo.get_high_rated_lawyers(limit)
+
 
 @router.get("/{id}")
 async def get_lawyer(id: int):
-    if id < 0 or id >= len(db_lawyers):
+    result:Lawyer = lawyerRepo.get_lawyer_by_id(id)
+    if not result:
         raise HTTPException(
-            status_code=404, detail="invalid id"
+            status_code=404, detail="Lawyer not found"
         )
-    lawyer = db_lawyers[id]
-    if not lawyer:
-        raise HTTPException(
-            status_code=404, detail="lawyer not found"
-        )
-    return lawyer     
+    return result
 
-   
+
+@router.get("/{id}/reviews")
+async def get_reviews_lawyer(id: int):
+    return {
+        "message":"not implemented yet"
+    }
+

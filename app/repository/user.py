@@ -25,6 +25,15 @@ class UserRepository:
         self.db.commit()
         self.db.refresh(user)
         return user
+    
+    def update_image(self, user_id, image):
+        user : User = self.db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+        user.profile_picture =  image
+        self.db.commit()
+        self.db.refresh(user)
+        return user
 
     def delete_user(self, user_id):
         return self.db.query(User).filter(User.id == user_id).delete()

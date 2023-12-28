@@ -1,11 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,File,UploadFile
 from app.models.user import User
 from app.config.database import get_db
 from app.models.user import User
 
-from typing import List
+from typing import List,Annotated,Union
 from fastapi import HTTPException
 from app.schemas.user import UserDto
+import datetime
+
 
 from app.repository.user import UserRepository
 
@@ -16,6 +18,19 @@ router = APIRouter(
     prefix="/api/users",
 )
 
+
+def saveFileToUploads(image) -> dict:
+    import os
+    basePath = "uploads/" +  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S").replace(" ", "_").replace(":", "-").replace(".", "-")
+    imagePath = (f"{basePath}/{image.filename}")
+    if not os.path.exists(basePath):
+        os.makedirs(basePath)    
+    with open(imagePath, "wb+") as file_object:
+        file_object.write(image.file.read())    
+    return {
+        "info": f"file '{image.filename}' saved at '{imagePath}'",
+        "path": imagePath
+    }
 
 userRepo = UserRepository(db)
 
@@ -38,9 +53,8 @@ async def get_user(id: int):
 
 
 
-## how to make username from the body
 @router.put("/{id}/username")
-async def update_user(id: int,username: str):
+async def update_username(id: int,username: str):
     user = userRepo.check_username(username)
     if user:
         raise HTTPException(
@@ -54,6 +68,40 @@ async def update_user(id: int,username: str):
         )
         
     return result
+
+
+
+@router.post("/uploadfile")
+async def create_upload_file(file: Union[UploadFile, None] = None):
+    if not file:
+        return {"message": "No upload file sent"}
+    file_location = f"uploads/{file.filename}"
+    with open(file_location, "wb+") as file_object:
+        file_object.write(file.file.read())    
+    return {"info": f"file '{file.filename}' saved at '{file_location}'"}
+
+
+
+
+@router.put("/{id}/image")
+async def update_image(id: int,image: Union[UploadFile, None] = None):
+    if not image:
+        raise HTTPException(
+            status_code=404, detail="No image sent"
+        )    
+    imagePath = saveFileToUploads(image)['path']
+
+    result = userRepo.update_image(id, imagePath)
+    if not result:
+        raise HTTPException(
+            status_code=404, detail="User not found"
+        )
+        
+    return {
+        "message":"image updated successfully",
+        "imagePath": imagePath
+    }
+
 
 @router.delete("/{id}")
 async def delete_user(id: int):

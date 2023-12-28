@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float,ForeignKey
 from app.config.database import Base
 
 
@@ -12,11 +12,9 @@ class Lawyer(Base):
    address = Column(String(255))
    description = Column(String(255))
    avocat_image = Column(String(255))
-   categories = Column(String(255))  # Assuming a comma-separated string for categories
-   schedule = Column(String(255))  # Assuming a serialized format for schedule
    rating = Column(Float)
-   comments = Column(String(255))  # Assuming a serialized format for comments
    social = Column(String(255))
    wilaya = Column(String(50))
    longitude = Column(Float)
-   latitude = Column(Float)
+   latitude = Column(Float)   
+   categories_id = Column(Integer)

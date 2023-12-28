@@ -1,5 +1,3 @@
-
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 import random
@@ -8,10 +6,7 @@ from app.models.lawyer import Lawyer
 from app.repository.lawyer import LawyerRepository
 from app.config.database import get_db
 
-
-
-
-
+from app.schemas.lawyer import LawyerDto    
 
 router = APIRouter(
     prefix="/api/lawyers",
@@ -32,17 +27,31 @@ async def get_lawyers(page: int = 0, pageSize: int = 10,):
     return result
 
 
+@router.post("/")
+async def create_lawyer(lawyer: LawyerDto):
+    try: 
+        result  = lawyerRepo.create_new_lawyer(lawyer)
+        if not result:
+            raise HTTPException(
+                status_code=500, detail="Internal server error"
+            )
+        return result
 
-@router.get("/reviews")
-async def get_reviews():
-    return {
-        "message":"not implemented yet"
-    }
+    except Exception as e:
+        return {
+            "message": e.orig.args[1]
+        }
+    
+  
+
+
+
 
 
 @router.get("/highest_rated")
 async def get_highest_rated(limit: int = 4):
     return lawyerRepo.get_high_rated_lawyers(limit)
+
 
 
 @router.get("/{id}")
@@ -55,9 +64,19 @@ async def get_lawyer(id: int):
     return result
 
 
-@router.get("/{id}/reviews")
-async def get_reviews_lawyer(id: int):
-    return {
-        "message":"not implemented yet"
-    }
+
+
+# @router.get("/reviews")
+# async def get_reviews():
+#     return {
+#         "message":"not implemented yet"
+#     }
+
+
+
+# @router.get("/{id}/reviews")
+# async def get_reviews_lawyer(id: int):
+#     return {
+#         "message":"not implemented yet"
+#     }
 

@@ -12,7 +12,10 @@ from app.utils.hash import hash_password
 
 def create_user(user: UserDto, db: Session):
         db_user = User(
-                ** user.dict()
+                fname = user.fname,
+                lname = user.lname,
+                email=user.email,
+                password=user.password,
         )
 
         print(db_user)

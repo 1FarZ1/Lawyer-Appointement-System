@@ -12,14 +12,14 @@ def get_user_by_email( email, db : Session):
 def get_all_users(db : Session,skip: int = 0, limit: int = 100):
     return db.query(User).offset(skip).limit(limit).all()
 
-def check_username(username, db : Session):
-    return db.query(User).filter(User.username == username).first()
+def check_email(email:str, db : Session):
+    return db.query(User).filter(User.email == email).first()
 
-def update_username(user_id, username, db : Session):
+def update_email(user_id, email, db : Session):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return None
-    user.username = username
+    user.email =  email
     db.commit()
     db.refresh(user)
     return user

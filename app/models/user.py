@@ -10,6 +10,6 @@ class User(Base):
     lname = Column(String(25))
     email = Column(String(20), unique=True)
     hashed_password = Column(String(20))
-    # lawyer =  relationship("Lawyer", back_populates="user")
+    lawyer =  relationship("Lawyer", back_populates="user")
     review = relationship("Review", back_populates="user")
 #    createdAt = Column(dt.Datetime)

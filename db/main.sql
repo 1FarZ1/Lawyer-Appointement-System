@@ -47,6 +47,8 @@ VALUES
 --  insert some users , here is the SCHEMA
 INSERT INTO user (id,fname,lname,email,hashed_password)
 
+-- give me a json of the user 
+{
 
 -- REMOVE all the rows in the lawyers table
 

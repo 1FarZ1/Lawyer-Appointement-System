@@ -53,11 +53,10 @@ async def login(UserDto: UserDto, db = Depends(get_db)):
         "status_code": 200,
     })
 
-## Register User
 @router.post('/register')
 async def register(userDto: UserDto, db = Depends(get_db)):
     try :
-        isUserExist =   userRepo.check_username(db,userDto.username)
+        isUserExist =   userRepo.check_email(db,userDto.email)
         if isUserExist:
             raise HTTPException(
                       status_code=401, detail="Username already exist"

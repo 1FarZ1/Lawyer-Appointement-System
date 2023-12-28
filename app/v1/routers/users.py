@@ -59,15 +59,15 @@ async def get_user(id: int):
 
 
 
-@router.put("/{id}/username")
-async def update_username(id: int,username: str):
-    user = userRepo.check_username(username)
+@router.put("/{id}/email")
+async def update_email(id: int,email: str):
+    user = userRepo.check_email(email)
     if user:
         raise HTTPException(
-            status_code=404, detail="Username already taken"
+            status_code=404, detail="email already used"
         )
 
-    result = userRepo.update_username(id, username)
+    result = userRepo.update_username(id, email)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"

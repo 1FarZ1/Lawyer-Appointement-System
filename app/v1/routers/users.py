@@ -3,21 +3,22 @@ from app.models.user import User
 from app.config.database import get_db
 from app.models.user import User
 
-from typing import List,Annotated,Union
+from typing import List,Annotated, Optional,Union
 from fastapi import HTTPException
 from app.schemas.user import UserDto
 import datetime
 
 
-from app.repository import user as userRepo
+from app.repository import user as userRepository
 
 
 db = get_db()
 
 router = APIRouter(
     prefix="/api/users",
+    tags=["users"],
+        # dependencies=[Depends(get_token_header)],
 )
-
 
 def saveFileToUploads(image) -> dict:
     import os
@@ -34,12 +35,14 @@ def saveFileToUploads(image) -> dict:
 
 
 
-@router.get("/")
+## add a new user  
+@router.get("/")    
 async def get_users(
-    page: int = 0, pageSize: int = 100, 
-    db = Depends(get_db)
+    page: int = 0, pageSize: int = 100,
+    sort: Optional[str] = None,  
+    db = Depends(get_db),
 ):
-    result:List[User] = userRepo.get_all_users(
+    result:List[User] = userRepository.get_all_users(
         db,page, pageSize
     )
     return result
@@ -48,9 +51,8 @@ async def get_users(
 
 
 @router.get("/{id}")
-async def get_user(id: int):
-    result:User = userRepo.get_user_by_id(id)
-    print(result)
+async def get_user(id: int, db = Depends(get_db)):
+    result:User = userRepository.get_user_by_id(id, db)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"
@@ -60,14 +62,14 @@ async def get_user(id: int):
 
 
 @router.put("/{id}/email")
-async def update_email(id: int,email: str):
-    user = userRepo.check_email(email)
+async def update_email(id: int,email: str , db = Depends(get_db)):
+    user = userRepository.check_email(email, db)
     if user:
         raise HTTPException(
             status_code=404, detail="email already used"
         )
 
-    result = userRepo.update_username(id, email)
+    result = userRepository.update_email(id, email, db)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"
@@ -97,7 +99,7 @@ async def update_image(id: int,image: Union[UploadFile, None] = None):
         )    
     imagePath = saveFileToUploads(image)['path']
 
-    result = userRepo.update_image(id, imagePath)
+    result = userRepository.update_image(id, imagePath)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"
@@ -111,7 +113,7 @@ async def update_image(id: int,image: Union[UploadFile, None] = None):
 
 @router.delete("/{id}")
 async def delete_user(id: int):
-    result = userRepo.delete_user(id)
+    result = userRepository.delete_user(id)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"

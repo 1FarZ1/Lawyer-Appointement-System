@@ -110,11 +110,11 @@ DELETE FROM lawyers
 
 --  create table categories
 
--- CREATE TABLE categories (
---     id INTEGER NOT NULL,
---     name VARCHAR(50) NOT NULL,
---     PRIMARY KEY (id)
--- );
+CREATE TABLE categories (
+    id INTEGER NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id)
+);
 
 -- and now change the categories column in lawyers table to be a foreign key to categories table
 

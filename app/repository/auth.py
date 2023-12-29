@@ -4,7 +4,7 @@ from fastapi import Depends
 from app.models.user import User
 from app.schemas.user import UserDto
 
-from app.utils.hash import hash_password
+import app.utils.hash as hash_utils
 
 # class AuthRepository:
 #     def __init__(self, db: Session = Depends(get_db)):
@@ -12,17 +12,16 @@ from app.utils.hash import hash_password
 
 def create_user(user: UserDto, db: Session):
         db_user = User(
-                fname = user.fname,
+              fname = user.fname,       
                 lname = user.lname,
                 email=user.email,
-                password=user.password,
+                hashed_password=user.password
         )
 
-        print(db_user)
-        # db.add(db_user)
-        # db.commit()
-        # db.refresh(db_user)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
         return db_user
 
 def hash_password(password: str):
-    return hash_password(password)
+    return hash_utils.hash_password(password)

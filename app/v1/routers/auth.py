@@ -56,17 +56,23 @@ async def login(UserDto: UserDto, db = Depends(get_db)):
 @router.post('/register')
 async def register(userDto: UserDto, db = Depends(get_db)):
     try :
-        isUserExist =   userRepo.check_email(db,userDto.email)
-        if isUserExist:
-            raise HTTPException(
-                      status_code=401, detail="Username already exist"
+        isUserExist =   userRepo.check_email(userDto.email,db)
+        if (isUserExist) :
+            return HTTPException(
+                      status_code=401, detail="email already exist"
                   )
         userDto.password = authRepo.hash_password(userDto.password)
-        user  =  authRepo.create_user(db,userDto)
+        user  =  authRepo.create_user(userDto,db)
+
+        ## jwt token 
+        # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        # access_token = authRepo.create_access_token(
+        #     data={"sub": user.username}, expires_delta=access_token_expires
+        # )
+
         return JSONResponse({
             "message": "User Created",
-            "email": user.email,
-            "username": user.username,
+            "user": user.hashed_password,
             "status_code": 201,
         })
     except Exception as e:

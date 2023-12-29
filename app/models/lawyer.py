@@ -14,12 +14,20 @@ class Lawyer(Base):
    social = Column(String(255))
    wilaya = Column(String(50))
    longitude = Column(Float)
-   latitude = Column(Float)   
+   latitude = Column(Float)  
+   status  =  Column(String(50), default="pending")
 
-   # categorie_id = Column(Integer, ForeignKey('categorie.id') )
-   # cateogorie = relationship("Category", back_populates="lawyer")
+   # categorie_id = Column(Integer, ForeignKey('categorie.id'))
+   # cateogorie = relationship("Categorie", back_populates="lawyer")
+
    user_id = Column(Integer, ForeignKey('user.id'))
    user = relationship("User", back_populates="lawyer")
 
    review = relationship("Review", back_populates="lawyer")
 
+
+
+## there are 3 status
+## pending
+## approved
+## rejected

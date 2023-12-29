@@ -14,5 +14,6 @@ class LawyerDto(BaseModel) :
     longitude : float
     latitude : float
     categories_id : int
+    user_id : int
     
     

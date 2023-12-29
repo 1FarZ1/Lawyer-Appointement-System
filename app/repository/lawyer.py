@@ -22,20 +22,20 @@ def get_high_rated_lawyers(db :Session, limit: int = 3):
 def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).offset(skip).limit(limit).all()
 def create_new_lawyer(db : Session, lawyer_dto : LawyerDto ):
-    lawyer:Lawyer = Lawyer()
-    lawyer.name = lawyer_dto.name
-    lawyer.fname = lawyer_dto.fname
-    lawyer.email = lawyer_dto.email
-    lawyer.phone = lawyer_dto.phone
-    lawyer.address = lawyer_dto.address
-    lawyer.description = lawyer_dto.description
-    lawyer.avocat_image = lawyer_dto.avocat_image
-    lawyer.rating = lawyer_dto.rating
-    lawyer.social = lawyer_dto.social
-    lawyer.wilaya = lawyer_dto.wilaya
-    lawyer.longitude = lawyer_dto.longitude
-    lawyer.latitude = lawyer_dto.latitude
-    lawyer.categories_id = lawyer_dto.categories_id
+    lawyer:Lawyer = Lawyer(
+        phone = lawyer_dto.phone,
+        address = lawyer_dto.address,
+        description = lawyer_dto.description,
+        avocat_image = lawyer_dto.avocat_image,
+        rating = lawyer_dto.rating,
+        social = lawyer_dto.social,
+        wilaya = lawyer_dto.wilaya,
+        longitude = lawyer_dto.longitude,
+        latitude = lawyer_dto.latitude, 
+        #categories_id = lawyer_dto.categories_id,
+        user_id = lawyer_dto.user_id
+    )
+    print(str(lawyer))
 
     db.add(lawyer)
     db.commit()

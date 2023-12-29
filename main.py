@@ -52,11 +52,11 @@ async def root():
 #     return response
 
 
-# @app.middleware("http")
-# async def apply_auth_middleware(request: Request, call_next):
-#     if request.url.path.startswith("/users"):
-#         return await auth_middleware(request, call_next)
-#     return await call_next(request)
+@app.middleware("http")
+async def apply_auth_middleware(request: Request, call_next):
+    if request.url.path.startswith("/users"):
+        return await auth_middleware(request, call_next)
+    return await call_next(request)
 
 
 

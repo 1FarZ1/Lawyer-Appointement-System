@@ -43,3 +43,4 @@ async def get_lawyer_reviews( id , db: Session = Depends(get_db)):
 
 ## get lawyer rating
 # @router.get("/lawyer/{id}/rating")
+

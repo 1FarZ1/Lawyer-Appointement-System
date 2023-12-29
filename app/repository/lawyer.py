@@ -1,10 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models import Lawyer
-from app.schemas.lawyer import LawyerDto
-
-# class LawyerRepository:
-#     def __init__(self, db :Session = Depends(get_db)):
-#         self.db = db
+from app.schemas import LawyerSchema
 
 def get_lawyer_by_id(db:Session, lawyer_id):  
         return db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
@@ -21,25 +17,22 @@ def get_high_rated_lawyers(db :Session, limit: int = 3):
 
 def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).offset(skip).limit(limit).all()
-def create_new_lawyer(db : Session, lawyer_dto : LawyerDto ):
+def create_new_lawyer(db : Session, lawyerSchema : LawyerSchema ):
     lawyer:Lawyer = Lawyer(
-        phone = lawyer_dto.phone,
-        address = lawyer_dto.address,
-        description = lawyer_dto.description,
-        avocat_image = lawyer_dto.avocat_image,
-        # rating = lawyer_dto.rating,
-        social = lawyer_dto.social,
-        wilaya = lawyer_dto.wilaya,
-        longitude = lawyer_dto.longitude,
-        latitude = lawyer_dto.latitude, 
-        categorie_id = lawyer_dto.categories_id,
-        user_id = lawyer_dto.user_id
+        phone = lawyerSchema.phone,
+        address = lawyerSchema.address,
+        description = lawyerSchema.description,
+        avocat_image = lawyerSchema.avocat_image,
+        social = lawyerSchema.social,
+        wilaya = lawyerSchema.wilaya,
+        longitude = lawyerSchema.longitude,
+        latitude = lawyerSchema.latitude, 
+        categorie_id = lawyerSchema.categories_id,
+        user_id = lawyerSchema.user_id
     )
-    print(str(lawyer))
 
     db.add(lawyer)
     db.commit()
     db.refresh(lawyer)
-    print(lawyer)
     return lawyer
 

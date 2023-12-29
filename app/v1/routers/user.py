@@ -5,7 +5,7 @@ from app.models import User
 
 from typing import List,Annotated, Optional,Union
 from fastapi import HTTPException
-from app.schemas.user import UserDto
+from app.schemas import UserSchema
 import datetime
 
 

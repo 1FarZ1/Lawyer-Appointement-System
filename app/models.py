@@ -68,16 +68,7 @@ class Categorie(Base):
 
 
 
-   
 
-# ## description = Column(String(255))
-# ## image = Column(String(255))
-# ## icon = Column(String(255))
-## there are 3 status
-## pending
-## approved
-## rejected
-   
 class Appointement(Base):
     __tablename__ = "appointement"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -88,4 +79,3 @@ class Appointement(Base):
     user = relationship("User", back_populates="appointement")
     lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
     lawyer = relationship("Lawyer", back_populates="appointement")
-    ## review = relationship("Review", back_populates="appointement")

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from app.schemas.user import UserDto
+from app.schemas import UserSchema
 from app.models import User
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from starlette.requests import Request
@@ -33,14 +33,13 @@ oauth.register(
 
 ##TODO:fix this 
 @router.post('/login')
-async def login(UserDto: UserDto, db = Depends(get_db)):
-    isUserExist = db.query(User).filter(User.username == UserDto.username).first()
+async def login(userSchema: UserSchema, db = Depends(get_db)):
+    isUserExist = userRepo.get_user_by_email(userSchema.email,db)
     if not isUserExist:
         raise HTTPException(
-            status_code=401, detail="Incorrect username"
+            status_code=401, detail="Incorrect email"
         )
-    # isPasswordCorrect = pwd_context.verify(UserDto.password, isUserExist.hashed_password)
-    isPasswordCorrect = UserDto.password == isUserExist.hashed_password
+    isPasswordCorrect = userSchema.password == isUserExist.hashed_password
     if not isPasswordCorrect:
         raise HTTPException(
             status_code=401, detail="Incorrect password"
@@ -54,15 +53,15 @@ async def login(UserDto: UserDto, db = Depends(get_db)):
     })
 
 @router.post('/register')
-async def register(userDto: UserDto, db = Depends(get_db)):
+async def register(userSchema: UserSchema, db = Depends(get_db)):
     try :
-        isUserExist =   userRepo.get_user_by_email(userDto.email,db)
+        isUserExist =   userRepo.get_user_by_email(userSchema.email,db)
         if (isUserExist) :
             return HTTPException(
                       status_code=401, detail="email already exist"
                   )
-        userDto.password = authRepo.hash_password(userDto.password)
-        user  =  authRepo.create_user(userDto,db)
+        userSchema.password = authRepo.hash_password(userSchema.password)
+        user  =  authRepo.create_user(userSchema,db)
 
         ## jwt token 
         # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)

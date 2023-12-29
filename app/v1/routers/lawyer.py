@@ -4,7 +4,7 @@ from app.models import Lawyer
 import app.repository.lawyer as lawyerRepo
 from app.config.database import get_db
 
-from app.schemas.lawyer import LawyerDto    
+from app.schemas import LawyerSchema    
 
 router = APIRouter(
     prefix="/api/lawyers",
@@ -24,7 +24,7 @@ async def get_lawyers(page: int = 0, pageSize: int = 100, db = Depends(get_db)):
 
 
 @router.post("/")
-async def create_lawyer(lawyer: LawyerDto, db = Depends(get_db)):
+async def create_lawyer(lawyer: LawyerSchema, db = Depends(get_db)):
     try: 
         result  = lawyerRepo.create_new_lawyer(db,lawyer)
         if not result:

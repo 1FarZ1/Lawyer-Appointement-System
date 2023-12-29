@@ -2,15 +2,10 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.models import User
-from app.schemas.user import UserDto
+from app.schemas import UserSchema
 
 import app.utils.hash as hash_utils
-
-# class AuthRepository:
-#     def __init__(self, db: Session = Depends(get_db)):
-#         self.db = db
-
-def create_user(user: UserDto, db: Session):
+def create_user(user: UserSchema, db: Session):
         db_user = User(
               fname = user.fname,       
                 lname = user.lname,

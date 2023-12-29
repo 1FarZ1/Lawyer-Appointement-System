@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from app.schemas.user import UserDto
-from app.models.user import User
+from app.models import User
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from starlette.requests import Request
 from app.config.database import get_db
@@ -56,7 +56,7 @@ async def login(UserDto: UserDto, db = Depends(get_db)):
 @router.post('/register')
 async def register(userDto: UserDto, db = Depends(get_db)):
     try :
-        isUserExist =   userRepo.check_email(userDto.email,db)
+        isUserExist =   userRepo.get_user_by_email(userDto.email,db)
         if (isUserExist) :
             return HTTPException(
                       status_code=401, detail="email already exist"

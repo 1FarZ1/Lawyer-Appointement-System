@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
-from app.models.lawyer import Lawyer
+from app.models import Lawyer
 import app.repository.lawyer as lawyerRepo
 from app.config.database import get_db
 
@@ -40,10 +40,6 @@ async def create_lawyer(lawyer: LawyerDto, db = Depends(get_db)):
     
   
 
-
-
-
-
 @router.get("/highest_rated")
 async def get_highest_rated(limit: int = 4, db = Depends(get_db)):
     return lawyerRepo.get_high_rated_lawyers(db,limit)
@@ -59,20 +55,4 @@ async def get_lawyer(id: int, db = Depends(get_db)):
         )
     return result
 
-
-
-
-# @router.get("/reviews")
-# async def get_reviews():
-#     return {
-#         "message":"not implemented yet"
-#     }
-
-
-
-# @router.get("/{id}/reviews")
-# async def get_reviews_lawyer(id: int):
-#     return {
-#         "message":"not implemented yet"
-#     }
 

@@ -2,8 +2,8 @@ from fastapi import FastAPI,HTTPException,Request
 # from fastapi.middleware import Middleware
 from fastapi.responses import JSONResponse
 from app.config.database import engine , SessionLocal
-import app.models.user as models
-from app.v1.routers import auth,users,lawyer,review
+import app.models as models
+from app.v1.routers import auth, user,lawyer,review,appointement
 # from app.utils.logger import logger,custom_logger
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.staticfiles import StaticFiles
@@ -14,9 +14,10 @@ app.add_middleware(SessionMiddleware, secret_key="!secret")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.include_router(auth.router)
-app.include_router(users.router)
+app.include_router(user.router)
 app.include_router(lawyer.router)
 app.include_router(review.router)
+app.include_router(appointement.router)
 
 @app.get("/")
 async def root():

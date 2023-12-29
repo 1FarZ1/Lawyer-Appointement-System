@@ -7,7 +7,7 @@ class LawyerDto(BaseModel) :
     description : str
     avocat_image : str
     # schedule : List[str]
-    rating : float
+    # rating : float
     # comments : List[str]
     social : str
     wilaya : str

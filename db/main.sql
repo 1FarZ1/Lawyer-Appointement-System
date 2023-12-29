@@ -130,7 +130,7 @@ DROP COLUMN categories;
 
 --  insert some categories
 -- this values "Droit administratif", "Droit bancaire", "Droit civil", "Droit commercial", "Droit de l'environnement", "Droit de l'immobilier", "Droit de la consommation", "Droit de la santé", "Droit des assurances", "Droit des entreprises", "Droit des transports", "Droit du sport", "Droit du travail", "Droit familial", "Droit pénal", "Droit routier"
-INSERT INTO categories (id , name)
+INSERT INTO categorie (id , name)
 VALUES
     (1, 'Droit administratif'),
     (2, 'Droit bancaire'),

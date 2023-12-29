@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from app.models.user import User
+from app.models import User
 from app.schemas.user import UserDto
 
 import app.utils.hash as hash_utils

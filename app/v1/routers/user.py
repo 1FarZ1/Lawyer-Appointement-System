@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,File,UploadFile
-from app.models.user import User
+from app.models import User
 from app.config.database import get_db
-from app.models.user import User
+from app.models import User
 
 from typing import List,Annotated, Optional,Union
 from fastapi import HTTPException
@@ -12,12 +12,11 @@ import datetime
 from app.repository import user as userRepository
 
 
-db = get_db()
 
 router = APIRouter(
     prefix="/api/users",
     tags=["users"],
-        # dependencies=[Depends(get_token_header)],
+ # dependencies=[Depends(get_token_header)],
 )
 
 def saveFileToUploads(image) -> dict:
@@ -63,7 +62,7 @@ async def get_user(id: int, db = Depends(get_db)):
 
 @router.put("/{id}/email")
 async def update_email(id: int,email: str , db = Depends(get_db)):
-    user = userRepository.check_email(email, db)
+    user = userRepository.get_user_by_email(email, db)
     if user:
         raise HTTPException(
             status_code=404, detail="email already used"
@@ -92,14 +91,14 @@ async def create_upload_file(file: Union[UploadFile, None] = None):
 
 
 @router.put("/{id}/image")
-async def update_image(id: int,image: Union[UploadFile, None] = None):
+async def update_image(id: int,image: Union[UploadFile, None] = None, db = Depends(get_db)):
     if not image:
         raise HTTPException(
             status_code=404, detail="No image sent"
         )    
     imagePath = saveFileToUploads(image)['path']
 
-    result = userRepository.update_image(id, imagePath)
+    result = userRepository.update_image(id, imagePath,db)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"
@@ -112,8 +111,8 @@ async def update_image(id: int,image: Union[UploadFile, None] = None):
 
 
 @router.delete("/{id}")
-async def delete_user(id: int):
-    result = userRepository.delete_user(id)
+async def delete_user(id: int, db = Depends(get_db)):
+    result = userRepository.delete_user(id, db)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"

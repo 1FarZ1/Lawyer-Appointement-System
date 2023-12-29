@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.lawyer import Lawyer
+from app.models import Lawyer
 from app.schemas.lawyer import LawyerDto
 
 # class LawyerRepository:
@@ -27,12 +27,12 @@ def create_new_lawyer(db : Session, lawyer_dto : LawyerDto ):
         address = lawyer_dto.address,
         description = lawyer_dto.description,
         avocat_image = lawyer_dto.avocat_image,
-        rating = lawyer_dto.rating,
+        # rating = lawyer_dto.rating,
         social = lawyer_dto.social,
         wilaya = lawyer_dto.wilaya,
         longitude = lawyer_dto.longitude,
         latitude = lawyer_dto.latitude, 
-        #categories_id = lawyer_dto.categories_id,
+        categorie_id = lawyer_dto.categories_id,
         user_id = lawyer_dto.user_id
     )
     print(str(lawyer))

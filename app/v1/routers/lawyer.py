@@ -8,7 +8,7 @@ from app.schemas import LawyerSchema
 
 router = APIRouter(
     prefix="/api/lawyers",
-    # tags=["lawyers"],
+    tags=["lawyers"],
     # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
@@ -25,7 +25,6 @@ async def get_lawyers(page: int = 0, pageSize: int = 100, db = Depends(get_db)):
 
 @router.post("/")
 async def create_lawyer(lawyer: LawyerSchema, db = Depends(get_db)):
-    try: 
         result  = lawyerRepo.create_new_lawyer(db,lawyer)
         if not result:
             raise HTTPException(
@@ -33,13 +32,7 @@ async def create_lawyer(lawyer: LawyerSchema, db = Depends(get_db)):
             )
         return result
 
-    except Exception as e:
-        return {
-            "message": e
-        }
-    
-  
-
+   
 @router.get("/highest_rated")
 async def get_highest_rated(limit: int = 4, db = Depends(get_db)):
     return lawyerRepo.get_high_rated_lawyers(db,limit)

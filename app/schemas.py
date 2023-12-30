@@ -2,6 +2,10 @@ from pydantic import BaseModel
 from typing import List
 
 
+class LoginSchema(BaseModel):
+    email: str
+    password: str
+
 class UserSchema(BaseModel):
     fname: str
     lname: str
@@ -21,7 +25,7 @@ class LawyerSchema(BaseModel) :
     wilaya : str
     longitude : float
     latitude : float
-    categories_id : int
+    categorie_id : int
     user_id : int
     
     

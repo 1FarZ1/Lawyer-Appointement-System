@@ -20,3 +20,6 @@ def create_user(user: UserSchema, db: Session):
 
 def hash_password(password: str):
     return hash_utils.hash_password(password)
+
+def verify_password(plain_password, hashed_password):
+    return hash_utils.verify_password(plain_password, hashed_password)

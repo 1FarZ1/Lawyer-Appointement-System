@@ -8,10 +8,10 @@ from sqlalchemy.orm import relationship
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    fname = Column(String(25),)
-    lname = Column(String(25))
-    email = Column(String(20), unique=True)
-    hashed_password = Column(String(20))    
+    fname = Column(String(255),)
+    lname = Column(String(255))
+    email = Column(String(255), unique=True)
+    hashed_password = Column(String(255))    
     lawyer = relationship("Lawyer", back_populates="user")
     review = relationship("Review", back_populates="user")
     appointement = relationship("Appointement", back_populates="user")
@@ -35,7 +35,7 @@ class Review (Base):
 class Lawyer(Base):
    __tablename__ = "lawyer"
    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-   phone = Column(String(20))
+   phone = Column(String(30))
    address = Column(String(255))
    description = Column(String(255))
    avocat_image = Column(String(255), default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png")

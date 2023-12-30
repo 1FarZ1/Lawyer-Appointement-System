@@ -12,10 +12,17 @@ from app.repository import appointement as appointementRepository
 
 router = APIRouter(
     prefix="/api/appointements",
+    tags=["appointements"],
 )
 
 
 @router.get("/")
 async def get_appointements(request:Request , db: Session = Depends(get_db)):
-    result:List[Appointement] = appointementRepository.get_lawyer_appointements(db)
+    result:List[Appointement] = appointementRepository.get_lawyer_appointements(db,1)
     return result
+
+@router.post("/{id}")
+async def create_appointement(id:int , db: Session = Depends(get_db)):
+
+    # result:Appointement =   appointementRepository.
+    return []

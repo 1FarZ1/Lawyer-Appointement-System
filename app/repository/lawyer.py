@@ -19,17 +19,9 @@ def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).offset(skip).limit(limit).all()
 def create_new_lawyer(db : Session, lawyerSchema : LawyerSchema ):
     lawyer:Lawyer = Lawyer(
-        phone = lawyerSchema.phone,
-        address = lawyerSchema.address,
-        description = lawyerSchema.description,
-        avocat_image = lawyerSchema.avocat_image,
-        social = lawyerSchema.social,
-        wilaya = lawyerSchema.wilaya,
-        longitude = lawyerSchema.longitude,
-        latitude = lawyerSchema.latitude, 
-        categorie_id = lawyerSchema.categories_id,
-        user_id = lawyerSchema.user_id
+       **lawyerSchema.model_dump()
     )
+    
 
     db.add(lawyer)
     db.commit()

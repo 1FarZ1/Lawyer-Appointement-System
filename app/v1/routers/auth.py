@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,status
 from fastapi.responses import JSONResponse
-from app.schemas import UserSchema
+from app.schemas import LoginSchema, UserSchema
 from app.models import User
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from starlette.requests import Request
 from app.config.database import get_db
 from app.repository import user as userRepo,auth as authRepo
+from app.utils.jwt import JWT
 
 
 
@@ -14,6 +15,7 @@ from app.repository import user as userRepo,auth as authRepo
 
 router = APIRouter(
     prefix="/api/auth",
+    tags=["auth"],
 )
 
 
@@ -31,47 +33,45 @@ oauth.register(
 )
 
 
-##TODO:fix this 
 @router.post('/login')
-async def login(userSchema: UserSchema, db = Depends(get_db)):
-    isUserExist = userRepo.get_user_by_email(userSchema.email,db)
-    if not isUserExist:
+async def login(loginSchema: LoginSchema, db = Depends(get_db)):
+    user = userRepo.get_user_by_email(loginSchema.email,db)
+    if not user:
         raise HTTPException(
             status_code=401, detail="Incorrect email"
         )
-    isPasswordCorrect = userSchema.password == isUserExist.hashed_password
-    if not isPasswordCorrect:
+    isMatch  = authRepo.verify_password(loginSchema.password,user.hashed_password)
+    if not isMatch: 
         raise HTTPException(
             status_code=401, detail="Incorrect password"
         )
+    
+    token = JWT.create_token({"id": user.id, "email": user.email})
+
 
     return JSONResponse({
         "message": "User Logged In",
-        "email": isUserExist.email,
-        "username": isUserExist.username,
-        "status_code": 200,
+        "token:": token,
+        "status_code": status.HTTP_200_OK,
     })
 
 @router.post('/register')
 async def register(userSchema: UserSchema, db = Depends(get_db)):
     try :
         isUserExist =   userRepo.get_user_by_email(userSchema.email,db)
-        if (isUserExist) :
+        if isUserExist :
             return HTTPException(
                       status_code=401, detail="email already exist"
                   )
         userSchema.password = authRepo.hash_password(userSchema.password)
         user  =  authRepo.create_user(userSchema,db)
 
-        ## jwt token 
-        # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        # access_token = authRepo.create_access_token(
-        #     data={"sub": user.username}, expires_delta=access_token_expires
-        # )
+        token = JWT.create_token({"id": user.id, "email": user.email})
 
+     
         return JSONResponse({
             "message": "User Created",
-            "user": user.hashed_password,
+            "token:": token,
             "status_code": 201,
         })
     except Exception as e:

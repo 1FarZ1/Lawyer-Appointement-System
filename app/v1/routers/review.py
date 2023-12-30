@@ -14,6 +14,7 @@ import app.repository.review as reviewRepository
 
 router = APIRouter(
     prefix="/api/reviews",
+    tags=["reviews"],
 )
 
 

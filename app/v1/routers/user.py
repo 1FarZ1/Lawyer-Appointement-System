@@ -10,14 +10,18 @@ import datetime
 
 
 from app.repository import user as userRepository
+    # from main import auth_middleware
+
+
 
 
 
 router = APIRouter(
     prefix="/api/users",
     tags=["users"],
- # dependencies=[Depends(get_token_header)],
-)
+    responses={404: {"description": "Not found"}},
+    # dependencies=[Depends(auth_middleware)],
+    )
 
 def saveFileToUploads(image) -> dict:
     import os
@@ -33,8 +37,6 @@ def saveFileToUploads(image) -> dict:
     }
 
 
-
-## add a new user  
 @router.get("/")    
 async def get_users(
     page: int = 0, pageSize: int = 100,

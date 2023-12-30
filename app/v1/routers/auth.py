@@ -45,8 +45,8 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
         raise HTTPException(
             status_code=401, detail="Incorrect password"
         )
-    
-    token = JWT.create_token({"id": user.id, "email": user.email})
+    print(user.role)
+    token = JWT.create_token({"id": user.id, "email": user.email , "role": user.role})
 
 
     return JSONResponse({
@@ -64,9 +64,10 @@ async def register(userSchema: UserSchema, db = Depends(get_db)):
                       status_code=401, detail="email already exist"
                   )
         userSchema.password = authRepo.hash_password(userSchema.password)
-        user  =  authRepo.create_user(userSchema,db)
-
-        token = JWT.create_token({"id": user.id, "email": user.email})
+        user = authRepo.create_user(userSchema,db)
+        print(user.role);
+        token = JWT.create_token({"id": user.id, "email": user.email,
+                                  "role": user.role})
 
      
         return JSONResponse({
@@ -80,6 +81,11 @@ async def register(userSchema: UserSchema, db = Depends(get_db)):
            "status_code": 500,
               "error": str(e),
          })
+
+
+
+
+
 
 
 

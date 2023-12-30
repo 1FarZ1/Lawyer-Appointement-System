@@ -19,6 +19,8 @@ router = APIRouter(
 
 @router.get("/")
 async def get_lawyers(page: int = 0, pageSize: int = 100, db = Depends(get_db)):
+
+    #check_permission(request.state.role, "admin")
     result:List[Lawyer] = lawyerRepo.get_all_lawyers(db,page, pageSize)
     return result
 

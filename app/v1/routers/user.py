@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends,File,UploadFile
+from fastapi import APIRouter, Depends,File, Request,UploadFile
+from app.enums import RoleEnum
 from app.models import User
 from app.config.database import get_db
 from app.models import User
@@ -10,6 +11,7 @@ import datetime
 
 
 from app.repository import user as userRepository
+from app.utils.check_permission import check_permission
     # from main import auth_middleware
 
 
@@ -39,6 +41,7 @@ def saveFileToUploads(image) -> dict:
 
 @router.get("/")    
 async def get_users(
+    request: Request,
     page: int = 0, pageSize: int = 100,
     sort: Optional[str] = None,  
     db = Depends(get_db),
@@ -46,13 +49,16 @@ async def get_users(
     result:List[User] = userRepository.get_all_users(
         db,page, pageSize
     )
+    check_permission({"role":request.state.user['role']}, [RoleEnum.ADMIN])
+       
     return result
 
 
 
 
-@router.get("/{id}")
-async def get_user(id: int, db = Depends(get_db)):
+@router.get("/")
+async def get_user(request:Request, db = Depends(get_db)):
+    id = request.state.user['id']
     result:User = userRepository.get_user_by_id(id, db)
     if not result:
         raise HTTPException(
@@ -62,8 +68,9 @@ async def get_user(id: int, db = Depends(get_db)):
 
 
 
-@router.put("/{id}/email")
-async def update_email(id: int,email: str , db = Depends(get_db)):
+@router.put("/email")
+async def update_email(request:Request,email: str , db = Depends(get_db)):
+    id = request.state.user['id']
     user = userRepository.get_user_by_email(email, db)
     if user:
         raise HTTPException(
@@ -92,14 +99,14 @@ async def create_upload_file(file: Union[UploadFile, None] = None):
 
 
 
-@router.put("/{id}/image")
-async def update_image(id: int,image: Union[UploadFile, None] = None, db = Depends(get_db)):
+@router.put("/image")
+async def update_image(request:Request,image: Union[UploadFile, None] = None, db = Depends(get_db)):
     if not image:
         raise HTTPException(
             status_code=404, detail="No image sent"
         )    
     imagePath = saveFileToUploads(image)['path']
-
+    id = request.state.user['id']
     result = userRepository.update_image(id, imagePath,db)
     if not result:
         raise HTTPException(
@@ -112,8 +119,9 @@ async def update_image(id: int,image: Union[UploadFile, None] = None, db = Depen
     }
 
 
-@router.delete("/{id}")
-async def delete_user(id: int, db = Depends(get_db)):
+@router.delete("/user")
+async def delete_user(request:Request, db = Depends(get_db)):
+    id = request.state.user['id']
     result = userRepository.delete_user(id, db)
     if not result:
         raise HTTPException(

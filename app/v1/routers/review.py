@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter,Depends, Request
 from typing import List
 from app.models import Review
 from app.config.database import get_db
@@ -20,7 +20,7 @@ router = APIRouter(
 
 
 @router.get("/{id}")
-async def get_reviews( id , db: Session = Depends(get_db)):
+async def get_reviews(request:Request, id , db: Session = Depends(get_db)):
     result:Review = reviewRepository.get_review_by_id(db,id)
     if not result:
         raise HTTPException(
@@ -29,10 +29,16 @@ async def get_reviews( id , db: Session = Depends(get_db)):
     return result
 
 
-@router.get("/lawyer/{id}")
-async def get_lawyer_reviews( id , db: Session = Depends(get_db)):
+@router.get("/lawyer/")
+async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
+    if(request.state.role != "lawyer"):
+        raise HTTPException(
+            status_code=401, detail="Unauthorized"
+        )
+    id = request.state.user['id']
     result:List[Review] = reviewRepository.get_lawyer_reviews(db,id)
     return result
+
 
 
 

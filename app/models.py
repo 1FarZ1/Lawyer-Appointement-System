@@ -2,6 +2,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum
 from app.config.database import Base
 from sqlalchemy.orm import relationship
 
+from app.enums import RoleEnum
+
+
 
 
 
@@ -12,10 +15,11 @@ class User(Base):
     lname = Column(String(255))
     email = Column(String(255), unique=True)
     hashed_password = Column(String(255))    
+    role = Column(Enum(RoleEnum), default="user")
     lawyer = relationship("Lawyer", back_populates="user")
     review = relationship("Review", back_populates="user")
     appointement = relationship("Appointement", back_populates="user")
-#    createdAt = Column(dt.Datetime)
+    #  createdAt = Column(dt.Datetime)
 
 class Review (Base):
     __tablename__ = "review"

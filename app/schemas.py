@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
 class LoginSchema(BaseModel):
@@ -10,14 +10,14 @@ class UserSchema(BaseModel):
     fname: str
     lname: str
     email: str
-    password: str
+    password: Optional[str] = None
+    image: str
     
 
 class LawyerSchema(BaseModel) :
     phone : str
     address : str
     description : str
-    avocat_image : str
     # schedule : List[str]
     # rating : float
     # comments : List[str]
@@ -37,11 +37,7 @@ class ReviewSchema(BaseModel):
     user_id : int
 
 class AppointementSchema(BaseModel):
-    date : str
-    time : str
     lawyer_id : int
-    user_id : int
-    status : str
 
 
 

@@ -6,16 +6,29 @@ from app.utils.jwt import JWT
 from app.v1.routers import auth, user,lawyer,review,appointement
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="!secret")
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+origins = [
+    "http://127.0.0.1:5500/",
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["POST", "GET", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    if request.url.path in ["/api/auth/login", "api/auth/login/google", "api/auth/redirect", "/api/auth/register","/docs",'/openapi.json']:
+    if request.url.path in ["/","/api/auth/login", "/api/auth/google-auth-callback", "/api/auth/google-auth", "/api/auth/register","/docs",'/openapi.json']:
         response = await call_next(request)
         return response
     token = request.headers.get("Authorization")

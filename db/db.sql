@@ -1,6 +1,7 @@
+-- Active: 1701266548715@@127.0.0.1@3306@genie
 
 
--- SELECT * FROM `user`;
+SELECT * FROM `user`;
 
 SELECT * FROM categorie
 

@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum,Boolean
 from app.config.database import Base
 from sqlalchemy.orm import relationship
 
 from app.enums import RoleEnum
+
+from datetime import datetime as Datetime
 
 
 
@@ -14,12 +16,16 @@ class User(Base):
     fname = Column(String(255),)
     lname = Column(String(255))
     email = Column(String(255), unique=True)
-    hashed_password = Column(String(255))    
+    password = Column(String(255)) 
+    isGoogleUser = Column(Boolean,default=False)
+    image = Column(String(255), default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png")
+
+    # isGoogleUser =  Column()
+    # createdAt = Column(Datetime)  
     role = Column(Enum(RoleEnum), default="user")
     lawyer = relationship("Lawyer", back_populates="user")
     review = relationship("Review", back_populates="user")
     appointement = relationship("Appointement", back_populates="user")
-    #  createdAt = Column(dt.Datetime)
 
 class Review (Base):
     __tablename__ = "review"
@@ -42,7 +48,6 @@ class Lawyer(Base):
    phone = Column(String(30))
    address = Column(String(255))
    description = Column(String(255))
-   avocat_image = Column(String(255), default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png")
    rating = Column(Float, default=0)
    social = Column(String(255))
    wilaya = Column(String(50))
@@ -77,7 +82,6 @@ class Appointement(Base):
     __tablename__ = "appointement"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     date = Column(String(50))
-    time = Column(String(50))
     status = Column(String(50), default="pending")
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates="appointement")

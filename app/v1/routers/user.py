@@ -12,7 +12,6 @@ import datetime
 
 from app.repository import user as userRepository
 from app.utils.check_permission import check_permission
-    # from main import auth_middleware
 
 
 
@@ -39,24 +38,26 @@ def saveFileToUploads(image) -> dict:
     }
 
 
-@router.get("/")    
+
+
+
+@router.get("/")       ##dependencies=[Depends(check_permission(permission=[RoleEnum.ADMIN]))])    
 async def get_users(
     request: Request,
     page: int = 0, pageSize: int = 100,
     sort: Optional[str] = None,  
     db = Depends(get_db),
 ):
+    await check_permission(user= request.state.user,permission=[RoleEnum.USER])
     result:List[User] = userRepository.get_all_users(
-        db,page, pageSize
+        db,page, pageSize, sort
     )
-    check_permission({"role":request.state.user['role']}, [RoleEnum.ADMIN])
-       
     return result
 
 
 
 
-@router.get("/")
+@router.get("/me")
 async def get_user(request:Request, db = Depends(get_db)):
     id = request.state.user['id']
     result:User = userRepository.get_user_by_id(id, db)
@@ -105,8 +106,8 @@ async def update_image(request:Request,image: Union[UploadFile, None] = None, db
         raise HTTPException(
             status_code=404, detail="No image sent"
         )    
-    imagePath = saveFileToUploads(image)['path']
     id = request.state.user['id']
+    imagePath = saveFileToUploads(image)['path']
     result = userRepository.update_image(id, imagePath,db)
     if not result:
         raise HTTPException(

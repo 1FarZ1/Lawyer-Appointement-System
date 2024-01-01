@@ -5,7 +5,12 @@ def get_user_by_id(user_id, db : Session):
     return db.query(User).filter(User.id == user_id).first()
 def get_user_by_email(email:str, db : Session):
     return db.query(User).filter(User.email == email).first()
-def get_all_users(db : Session,skip: int = 0, limit: int = 100):
+def get_all_users(db : Session,skip: int = 0, limit: int = 100, sort: str = None):
+    if sort:
+        sort_attr = getattr(User, sort.replace("-", ""))
+        if sort.startswith("-"):
+            sort_attr = sort_attr.desc()
+        return db.query(User).order_by(sort_attr).offset(skip).limit(limit).all()
     return db.query(User).offset(skip).limit(limit).all()
 
 def update_email(user_id, email:str, db : Session):

@@ -7,6 +7,7 @@ from app.config.database import get_db
 from sqlalchemy.orm import Session
 from app.repository import appointement as appointementRepository
 
+from app.schemas import AppointementSchema
 
 
 
@@ -21,8 +22,14 @@ async def get_appointements(request:Request , db: Session = Depends(get_db)):
     result:List[Appointement] = appointementRepository.get_lawyer_appointements(db,1)
     return result
 
-@router.post("/{id}")
-async def create_appointement(id:int , db: Session = Depends(get_db)):
+@router.post("/create")
+async def create_appointement(request: Request, 
+    appointementSchema:AppointementSchema,
+                              db: Session = Depends(get_db) ):
+    id = request.state.user['id']
 
-    # result:Appointement =   appointementRepository.
-    return []
+    result = appointementRepository.create_appointement(db,appointementSchema,id)
+    return result
+    
+
+

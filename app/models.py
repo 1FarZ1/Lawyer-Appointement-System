@@ -82,6 +82,7 @@ class Appointement(Base):
     __tablename__ = "appointement"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     date = Column(String(50))
+    time = Column(String(50))
     status = Column(String(50), default="pending")
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates="appointement")

@@ -38,6 +38,8 @@ class ReviewSchema(BaseModel):
 
 class AppointementSchema(BaseModel):
     lawyer_id : int
+    date:str
+    time:str
 
 
 

@@ -61,7 +61,7 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
         "status_code": status.HTTP_200_OK,
     })
 
-@router.post('/register')
+@router.post('/register-lawyer')
 async def register(userSchema: UserSchema, db = Depends(get_db)):
     try :
         isUserExist =   userRepo.get_user_by_email(userSchema.email,db)
@@ -86,6 +86,11 @@ async def register(userSchema: UserSchema, db = Depends(get_db)):
            "status_code": 500,
               "error": str(e),
          })
+
+
+
+
+
 
 
 

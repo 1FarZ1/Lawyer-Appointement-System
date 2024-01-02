@@ -38,7 +38,7 @@ async def create_appointement(request: Request,
             )
 
         result = appointementRepository.create_appointement(db,appointementSchema,id)
-        return result
+        return result 
   
     
 

@@ -28,7 +28,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    if request.url.path in ["/","/api/auth/login", "/api/auth/google-auth-callback", "/api/auth/google-auth", "/api/auth/register","/docs",'/openapi.json','/api/location/wilaya' ,"/api/location/cities/1"]:
+    if request.url.path in ["/","/api/auth/login", "/api/auth/google-auth-callback", "/api/auth/google-auth", "/api/auth/register","/docs",'/openapi.json','/api/location/wilaya'] or request.url.path.startswith("/api/location/cities") :
         response = await call_next(request)
         return response
     token = request.headers.get("Authorization")

@@ -28,3 +28,11 @@ def create_new_lawyer(db : Session, lawyerSchema : LawyerSchema ):
     db.refresh(lawyer)
     return lawyer
 
+
+
+async def change_status(db:Session,lawyer_id,status):
+    lawyer = db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
+    lawyer.status = status
+    db.commit()
+    db.refresh(lawyer)
+    return lawyer

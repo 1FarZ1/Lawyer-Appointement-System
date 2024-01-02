@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from typing import List
 from app.models import Lawyer
 import app.repository.lawyer as lawyerRepo
 from app.config.database import get_db
 
+from utils.check_permission import check_permission
 from app.schemas import LawyerSchema    
 
+from app.enums import RoleEnum
 router = APIRouter(
     prefix="/api/lawyers",
     tags=["lawyers"],
@@ -18,9 +20,10 @@ router = APIRouter(
 
 
 @router.get("/")
-async def get_lawyers(page: int = 0, pageSize: int = 100, db = Depends(get_db)):
-
-    #check_permission(request.state.role, "admin")
+async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
+    check_permission(request.state.user, [
+        RoleEnum.ADMIN,
+    ])
     result:List[Lawyer] = lawyerRepo.get_all_lawyers(db,page, pageSize)
     return result
 

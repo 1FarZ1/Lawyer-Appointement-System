@@ -19,8 +19,6 @@ class LawyerSchema(BaseModel) :
     address : str
     description : str
     # schedule : List[str]
-    # rating : float
-    # comments : List[str]
     social : str
     wilaya : str
     longitude : float

@@ -26,7 +26,7 @@ async def approve_lawyer(request:Request,approaveSchema:ApproveSchema,db=Depends
     check_permission(request.state.user,[
         RoleEnum.ADMIN
 ])
-    result =  await lawyerRepo.changeStatus(db,approaveSchema.id, "Approved" if approaveSchema.isApproved else "Rejected")
+    result =  await lawyerRepo.change_status(db,approaveSchema.id, "Approved" if approaveSchema.isApproved else "Rejected")
     return result
 
 

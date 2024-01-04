@@ -80,6 +80,7 @@ async def root():
 
 
 
+
 # @app.middleware("http")
 # async def add_logger(request: Request, call_next):
 #     response = await custom_logger(request, call_next)

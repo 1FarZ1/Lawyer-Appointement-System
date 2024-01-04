@@ -49,9 +49,9 @@ class Lawyer(Base):
    address = Column(String(255))
    description = Column(String(255))
    rating = Column(Float, default=0)
-   facebookUrl = Column(String(255))
+   social = Column(String(255))
    wilaya = Column(String(50))
-   city = Column(String(50))
+#    city = Column(String(50))
    longitude = Column(Float)
    latitude = Column(Float)  
    status = Column(String(50), default="pending")  
@@ -59,10 +59,8 @@ class Lawyer(Base):
    user_id = Column(Integer, ForeignKey('user.id'))
    user = relationship("User", back_populates="lawyer")
    review = relationship("Review", back_populates="lawyer")
-   
    categorie_id = Column(Integer, ForeignKey('categorie.id'))
    categorie = relationship("Categorie", back_populates="lawyer")
-
    appointement = relationship("Appointement", back_populates="lawyer")
 
 

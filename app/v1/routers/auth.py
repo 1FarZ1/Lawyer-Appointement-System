@@ -48,18 +48,24 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
         raise HTTPException(
             status_code=401, detail="Incorrect email"
         )
+    if user.isGoogleUser:
+        raise HTTPException(
+            status_code=401, detail="users need to sign in with google "
+        )
+    
     isMatch  = authRepo.verify_password(loginSchema.password,user.password)
     if not isMatch: 
         raise HTTPException(
             status_code=401, detail="Incorrect password"
         )
-    print(user.role)
     token = JWT.create_token({"id": user.id, "email": user.email , "role": user.role})
     return JSONResponse({
         "message": "User Logged In",
         "token:": token,
         "status_code": status.HTTP_200_OK,
     })
+
+
 
 @router.post('/register-lawyer')
 async def register(userSchema: UserSchema, db = Depends(get_db)):

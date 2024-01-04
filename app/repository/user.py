@@ -30,5 +30,17 @@ def update_image(user_id, imageUrl:str, db : Session):
     db.commit()
     db.refresh(user)
     return user
+
+def update_password(user_id,newPassword,current_password,db:Session):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return None
+    if user.password != current_password:
+        return None
+    user.password = newPassword
+    db.commit()
+    db.refresh(user)
+    return user
+
 def delete_user( user_id, db : Session):
     return db.query(User).filter(User.id == user_id).delete()

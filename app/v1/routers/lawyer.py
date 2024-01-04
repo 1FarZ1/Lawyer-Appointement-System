@@ -4,7 +4,7 @@ from app.models import Lawyer
 import app.repository.lawyer as lawyerRepo
 from app.config.database import get_db
 
-from utils.check_permission import check_permission
+from app.utils.check_permission import check_permission
 from app.schemas import LawyerSchema    
 
 from app.enums import RoleEnum

@@ -120,6 +120,20 @@ async def update_image(request:Request,image: Union[UploadFile, None] = None, db
     }
 
 
+
+
+
+@router.patch('/update-password')
+async def update_password(request:Request, password: str, current_password:str, db = Depends(get_db)):
+    id = request.state.user['id']
+    result = userRepository.update_password(id, password, current_password,db)
+    if not result:
+        raise HTTPException(
+            status_code=404, detail="User not found"
+        )
+    return {"message":"Password updated successfully"}
+
+
 @router.delete("/user")
 async def delete_user(request:Request, db = Depends(get_db)):
     id = request.state.user['id']

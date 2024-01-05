@@ -13,6 +13,12 @@ def get_all_users(db : Session,skip: int = 0, limit: int = 100, sort: str = None
         return db.query(User).order_by(sort_attr).offset(skip).limit(limit).all()
     return db.query(User).offset(skip).limit(limit).all()
 
+
+
+
+
+
+
 def update_email(user_id, email:str, db : Session):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:

@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum,Boolean
 from app.config.database import Base
 from sqlalchemy.orm import relationship
-
 from app.enums import RoleEnum
-
 from datetime import datetime as Datetime
 
 
@@ -17,11 +15,9 @@ class User(Base):
     lname = Column(String(255))
     email = Column(String(255), unique=True)
     password = Column(String(255)) 
-    isGoogleUser = Column(Boolean,default=False)
-    image = Column(String(255), default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png")
-
-    # isGoogleUser =  Column()
-    # createdAt = Column(Datetime)  
+    #image = Column(String(255), default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png")
+    #isGoogleUser = Column(Boolean,default=False)
+    createdAt = Column(Datetime)  
     role = Column(Enum(RoleEnum), default="user")
     lawyer = relationship("Lawyer", back_populates="user")
     review = relationship("Review", back_populates="user")
@@ -30,12 +26,12 @@ class User(Base):
 class Review (Base):
     __tablename__ = "review"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    description = Column(String(255))
+    rating = Column(Integer)
     lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
     lawyer = relationship("Lawyer", back_populates="review")
     user = relationship("User", back_populates="review")
-    rating = Column(Integer)
-    description = Column(String(255))
     # user = relationship("User", back_populates="reviews")
     # lawyer = relationship("Lawyer", back_populates="reviews")
 
@@ -49,6 +45,10 @@ class Lawyer(Base):
    address = Column(String(255))
    description = Column(String(255))
    rating = Column(Float, default=0)
+   image = Column(
+        String(255),
+        default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png",
+   )
    social = Column(String(255))
    wilaya = Column(String(50))
 #    city = Column(String(50))

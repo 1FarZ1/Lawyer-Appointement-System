@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 import app.repository.review as reviewRepository
+from app.schemas import ReviewSchema
 
 
 
@@ -20,7 +21,7 @@ router = APIRouter(
 
 
 @router.get("/{id}")
-async def get_reviews(request:Request, id , db: Session = Depends(get_db)):
+async def get_reviews(request:Request, id , db: Session = Depends(get_db)):    
     result:Review = reviewRepository.get_review_by_id(db,id)
     if not result:
         raise HTTPException(
@@ -43,10 +44,21 @@ async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
 
 
 
-# @router.post("/lawyer/{id}")
-# async def create_review( id , db: Session = Depends(get_db)):
-#     result:List[Review] = reviewRepository.get_lawyer_reviews(db,id)
-#     return result
+@router.post("/lawyer/")
+async def create_review(reviewSchema:ReviewSchema, request:Request , db: Session = Depends(get_db)):
+
+    if(request.state.role != "user"):
+        raise HTTPException(
+            status_code=401, detail="you cant do this action"
+        )
+    
+
+
+
+
+
+    result:List[Review] = reviewRepository.add_review(db,reviewSchema,user_id)
+    return result
 
 ## get lawyer rating
 # @router.get("/lawyer/{id}/rating")

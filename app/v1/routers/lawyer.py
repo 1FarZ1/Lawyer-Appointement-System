@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from typing import List
+from typing import List, Optional
+
+from pydantic import BaseModel
 from app.models import Lawyer
 import app.repository.lawyer as lawyerRepo
 from app.config.database import get_db
@@ -17,6 +19,12 @@ router = APIRouter(
 
 
 
+class ApproveSchema(BaseModel):
+    id: int
+    isApproved: bool
+    rejection_reason: Optional[str] = None 
+
+
 
 
 @router.get("/")
@@ -28,14 +36,24 @@ async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = D
     return result
 
 
-@router.post("/")
-async def create_lawyer(lawyer: LawyerSchema, db = Depends(get_db)):
-        result  = lawyerRepo.create_new_lawyer(db,lawyer)
-        if not result:
-            raise HTTPException(
-                status_code=500, detail="Internal server error"
-            )
-        return result
+## get accepeted lawyers
+@router.get("/user")
+async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
+    check_permission(request.state.user, [
+        RoleEnum.ADMIN,
+    ])
+    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize)
+    return result
+
+
+# @router.post("/")
+# async def create_lawyer(lawyer: LawyerSchema, db = Depends(get_db)):
+#         result  = lawyerRepo.create_new_lawyer(db,lawyer)
+#         if not result:
+#             raise HTTPException(
+#                 status_code=500, detail="Internal server error"
+#             )
+#         return result
 
    
 @router.get("/highest_rated")
@@ -52,5 +70,19 @@ async def get_lawyer(id: int, db = Depends(get_db)):
             status_code=404, detail="Lawyer not found"
         )
     return result
+
+
+
+@router.patch("/lawyer/response")
+async def approve_lawyer(request:Request,approaveSchema:ApproveSchema,db=Depends(get_db)):
+
+    check_permission(request.state.user,[
+        RoleEnum.ADMIN
+])
+    #lawyer:Lawyer = lawyerRepo.get_lawyer_by_id(db,lawyer_id=approaveSchema.id)
+    result =  await lawyerRepo.change_status(db,approaveSchema.id, "Approved" if approaveSchema.isApproved else "Rejected")
+    return result
+
+
 
 

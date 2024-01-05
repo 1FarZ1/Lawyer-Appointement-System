@@ -48,19 +48,22 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
         raise HTTPException(
             status_code=401, detail="Incorrect email"
         )
+
     if user.isGoogleUser:
         raise HTTPException(
-            status_code=401, detail="users need to sign in with google "
+            status_code=401, detail="user need to sign in with google "
         )
-    
     isMatch  = authRepo.verify_password(loginSchema.password,user.password)
     if not isMatch: 
         raise HTTPException(
             status_code=401, detail="Incorrect password"
         )
+
     token = JWT.create_token({"id": user.id, "email": user.email , "role": user.role})
+
+
     return JSONResponse({
-        "message": "User Logged In",
+        "message": "User Logged In Successfully",
         "token:": token,
         "status_code": status.HTTP_200_OK,
     })
@@ -76,7 +79,10 @@ async def register(userSchema: UserSchema, db = Depends(get_db)):
                       status_code=401, detail="email already exist"
                   )
         userSchema.password = authRepo.hash_password(userSchema.password)
+
+        ###
         user = authRepo.create_user(userSchema,db)
+        ###
         token = JWT.create_token({"id": user.id, "email": user.email,
                                   "role": user.role})
 
@@ -126,7 +132,7 @@ async def google_auth_callback(request: Request,db=Depends(get_db)):
         email = googleUser['email']
         user = userRepo.get_user_by_email(db=db,email=email)
         name = token['userinfo']['name'] 
-        picture = token['userinfo']['picture']    
+#       picture = token['userinfo']['picture']    
         if user:
             token = JWT.create_token({"id": user.id, "email": user.email,
                                   "role": user.role})
@@ -139,9 +145,8 @@ async def google_auth_callback(request: Request,db=Depends(get_db)):
                 email=email,
                 fname=name,
                 lname=name,
-                image=picture,            
             )
-        user = authRepo.create_user(userSchema,db,isGoogleUser=True)
+        user = authRepo.create_user(userSchema,db)
         token = JWT.create_token({"id": user.id, "email": user.email,
                                   "role": user.role})
 

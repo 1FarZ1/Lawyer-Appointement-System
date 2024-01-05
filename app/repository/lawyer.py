@@ -13,10 +13,12 @@ def get_lawyer_by_name(db : Session, name):
     return db.query(Lawyer).filter(Lawyer.name == name).first()
 
 def get_high_rated_lawyers(db :Session, limit: int = 3):
-    return get_all_lawyers().order_by(Lawyer.rating.desc()).limit(limit).all()
-
+    return get_all_accepted_lawyers().order_by(Lawyer.rating.desc()).limit(limit).all()
 
 def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
+    return db.query(Lawyer).offset(skip).limit(limit).all()
+
+def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).filter(
         Lawyer.status == "approved"
     ).offset(skip).limit(limit).all()
@@ -35,3 +37,5 @@ async def change_status(db:Session,lawyer_id,status):
     db.commit()
     db.refresh(lawyer)
     return lawyer
+
+#def update_profile

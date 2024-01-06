@@ -21,7 +21,7 @@ router = APIRouter(
 
 class ApproveSchema(BaseModel):
     id: int
-    isApproved: bool
+    is_Approved: bool
     rejection_reason: Optional[str] = None 
 
 
@@ -60,6 +60,24 @@ async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 10
 async def get_highest_rated(limit: int = 4, db = Depends(get_db)):
     return lawyerRepo.get_high_rated_lawyers(db,limit)
 
+@router.get('/pending')
+async def get_pending_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
+    check_permission(request.state.user, [
+        RoleEnum.USER,
+    ])
+    result:List[Lawyer] = lawyerRepo.get_all_pending_lawyers(db,page, pageSize)
+    return result
+
+@router.get('/accepted')
+async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
+    check_permission(request.state.user, [
+        RoleEnum.USER,
+    ])
+    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize)
+    return result
+
+
+
 
 
 @router.get("/{id}")
@@ -80,7 +98,7 @@ async def approve_lawyer(request:Request,approaveSchema:ApproveSchema,db=Depends
         RoleEnum.ADMIN
 ])
     #lawyer:Lawyer = lawyerRepo.get_lawyer_by_id(db,lawyer_id=approaveSchema.id)
-    result =  await lawyerRepo.change_status(db,approaveSchema.id, "Approved" if approaveSchema.isApproved else "Rejected")
+    result =  await lawyerRepo.change_status(db,approaveSchema.id, "Approved" if approaveSchema.is_Approved else "Rejected")
     return result
 
 

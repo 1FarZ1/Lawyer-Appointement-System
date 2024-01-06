@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum,Boolean
+import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum,Boolean,DateTime
 from app.config.database import Base
 from sqlalchemy.orm import relationship
 from app.enums import RoleEnum
-from datetime import datetime as Datetime
 
 
 
@@ -14,10 +14,10 @@ class User(Base):
     fname = Column(String(255),)
     lname = Column(String(255))
     email = Column(String(255), unique=True)
-    password = Column(String(255)) 
-    #image = Column(String(255), default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png")
+    password = Column(String(255),nullable=True)
     #isGoogleUser = Column(Boolean,default=False)
-    createdAt = Column(Datetime)  
+    createdAt = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
+    #updatedAt = Column(DateTime(timezone=True), onupdate=func.now())
     role = Column(Enum(RoleEnum), default="user")
     lawyer = relationship("Lawyer", back_populates="user")
     review = relationship("Review", back_populates="user")

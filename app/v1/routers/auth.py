@@ -2,12 +2,14 @@ import secrets
 from urllib.parse import urlencode
 from fastapi import APIRouter, Depends, HTTPException,status
 from fastapi.responses import JSONResponse
-from app.schemas import LoginSchema, UserSchema
+from pydantic import BaseModel
+from app.enums import RoleEnum
+from app.schemas import CheckEmailSchema, LoginSchema, GoogleUserSchema,LawyerUserSchema,LUserSchema,LawyerInfoSchema
 from app.models import User
 from authlib.integrations.starlette_client import OAuth, OAuthError  
 from starlette.requests import Request
 from app.config.database import get_db
-from app.repository import user as userRepo,auth as authRepo
+from app.repository import user as userRepo,auth as authRepo, lawyer as lawyerRepo
 from app.utils.jwt import JWT
 
 
@@ -35,6 +37,7 @@ oauth.register(
     client_secret=GOOGLE_CLIENT_SECRET,
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={
+        ## get opneid profile email familyname name 
         'scope': 'openid email profile',
     },
     
@@ -49,55 +52,121 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
             status_code=401, detail="Incorrect email"
         )
 
-    if user.isGoogleUser:
+    ## if not lawyer  he need to log in with google not with email and pass
+    if user.role != "lawyer":
         raise HTTPException(
-            status_code=401, detail="user need to sign in with google "
+            status_code=401, detail="you need to login with google"
         )
+    ## get the lawyer from the user
     isMatch  = authRepo.verify_password(loginSchema.password,user.password)
     if not isMatch: 
-        raise HTTPException(
+        return HTTPException(
             status_code=401, detail="Incorrect password"
         )
+    lawyer = lawyerRepo.get_lawyer_by_user(db,user.id)
+    print(lawyer.status)
+    if lawyer.status == "pending":
+            raise HTTPException(
+                status_code=401, detail="your account waiting for approvatation"
+            )   
+
+
 
     token = JWT.create_token({"id": user.id, "email": user.email , "role": user.role})
-
-
     return JSONResponse({
-        "message": "User Logged In Successfully",
+        "message": "lawyer  Logged In Successfully",
         "token:": token,
         "status_code": status.HTTP_200_OK,
     })
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 @router.post('/register-lawyer')
-async def register(userSchema: UserSchema, db = Depends(get_db)):
-    try :
-        isUserExist =   userRepo.get_user_by_email(userSchema.email,db)
+async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
+        isUserExist =   userRepo.get_user_by_email(lawyerSchema.email,db)
         if isUserExist :
-            return HTTPException(
+            raise HTTPException(
                       status_code=401, detail="email already exist"
                   )
-        userSchema.password = authRepo.hash_password(userSchema.password)
+        lawyerSchema.password = authRepo.hash_password(lawyerSchema.password)
 
-        ###
-        user = authRepo.create_user(userSchema,db)
-        ###
+        lUserSchema = LUserSchema(
+            email=lawyerSchema.email,
+            fname=lawyerSchema.fname,
+            lname=lawyerSchema.lname,
+            password=lawyerSchema.password,
+        )
+    
+        user = authRepo.register_user(lUserSchema,db,role=RoleEnum.LAWYER)
+
+
+        lawyerInfo = LawyerInfoSchema(
+            phone = lawyerSchema.phone,
+            address = lawyerSchema.address,
+            description = lawyerSchema.description,
+            social = lawyerSchema.social,
+            wilaya = lawyerSchema.wilaya,
+            longitude = lawyerSchema.longitude,
+            latitude = lawyerSchema.latitude,
+            categorie_id = lawyerSchema.categorie_id,
+            user_id = user.id
+        )
+        lawyer = lawyerRepo.create_new_lawyer(db,lawyerInfo)
+        print(lawyer)
+        
         token = JWT.create_token({"id": user.id, "email": user.email,
                                   "role": user.role})
 
-     
         return JSONResponse({
             "message": "User Created",
             "token:": token,
             "status_code": 201,
         })
-    except Exception as e:
-         return JSONResponse({
-           "message": "something went wrong",
-           "status_code": 500,
-              "error": str(e),
-         })
+    # except Exception as e:
+    #      return JSONResponse({
+    #        "message": "something went wrong",
+    #        "status_code": 500,
+    #           "error": str(e),
+    #      })
+
+
+
+
+
+
+@router.post('/check-email')
+async def check_email(chekEmailSchema: CheckEmailSchema, db = Depends(get_db)):
+    user = userRepo.get_user_by_email(chekEmailSchema.email,db)
+    if not user:
+        return JSONResponse({
+            "message": "email not exist",
+            "status_code": 200,
+        })
+    return JSONResponse({
+        "message": "email already exist",
+        "status_code": 401,
+    })
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -130,9 +199,7 @@ async def google_auth_callback(request: Request,db=Depends(get_db)):
         token = await oauth.google.authorize_access_token(request)
         googleUser = token['userinfo']
         email = googleUser['email']
-        user = userRepo.get_user_by_email(db=db,email=email)
-        name = token['userinfo']['name'] 
-#       picture = token['userinfo']['picture']    
+        user = userRepo.get_user_by_email(db=db,email=email)           
         if user:
             token = JWT.create_token({"id": user.id, "email": user.email,
                                   "role": user.role})
@@ -141,12 +208,15 @@ async def google_auth_callback(request: Request,db=Depends(get_db)):
             "token:": token,
                     "status_code": status.HTTP_200_OK, })
         
-        userSchema = UserSchema(
+
+        fname = googleUser['given_name']
+        lname = googleUser['family_name'] if googleUser['family_name'] else googleUser['name'] 
+        userSchema = GoogleUserSchema(
                 email=email,
-                fname=name,
-                lname=name,
+                fname=fname,
+                lname=lname,
             )
-        user = authRepo.create_user(userSchema,db)
+        user = authRepo.register_user(userSchema,db)
         token = JWT.create_token({"id": user.id, "email": user.email,
                                   "role": user.role})
 

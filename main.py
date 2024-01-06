@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="!secret")
+app.add_middleware(SessionMiddleware, secret_key="!itsasecret")
 origins = [
     "http://127.0.0.1:5500/",
 ]
@@ -26,9 +26,19 @@ app.add_middleware(
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+
+non_authenticated_routes = [
+    "/","/docs",'/openapi.json',
+]
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
-    if request.url.path in ["/","/api/auth/login", "/api/auth/google-auth-callback", "/api/auth/google-auth", "/api/auth/register","/docs",'/openapi.json','/api/location/wilaya'] or request.url.path.startswith("/api/location/cities") :
+    print(request.url.path)
+    if request.url.path in non_authenticated_routes or request.url.path.startswith(
+        (
+            "/api/location/",
+            "/api/auth/",
+        )
+    ) :
         response = await call_next(request)
         return response
     token = request.headers.get("Authorization")

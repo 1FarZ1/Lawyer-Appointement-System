@@ -71,7 +71,7 @@ async def create_appointement(request: Request,
   
     
 
-@router.post("/lawyer/respond/")
+@router.post("/lawyer/respond")
 async def respond_appointement(request: Request, approaveSchema:ApproveSchema , db: Session = Depends(get_db)):
     check_permission(request.state.user,[
         RoleEnum.LAWYER
@@ -88,7 +88,7 @@ async def respond_appointement(request: Request, approaveSchema:ApproveSchema , 
             detail="you cant respond to this appointement"
         )
 
-    result = appointementRepository.respond_appointement(db,lawyer_id,approaveSchema.id,"Accepted" if approaveSchema.isApproved else "Rejected")
+    result = appointementRepository.respond_appointement(db,lawyer_id,approaveSchema.id,"Accepted" if approaveSchema.is_Approved else "Rejected")
     return result
 
 

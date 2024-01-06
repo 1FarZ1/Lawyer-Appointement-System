@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models import Lawyer
-from app.schemas import LawyerSchema
+from app.schemas import LawyerUserSchema
 
 
 def get_lawyer_by_id(db:Session, lawyer_id):  
@@ -8,6 +8,19 @@ def get_lawyer_by_id(db:Session, lawyer_id):
 
 def get_lawyer_by_email( db: Session, email):
     return db.query(Lawyer).filter(Lawyer.email == email).first()
+
+def get_lawyer_by_user(
+    db: Session, user_id
+):
+    return db.query(Lawyer).filter(Lawyer.user_id == user_id).first()
+
+
+def get_all_pending_lawyers(
+    db: Session, skip: int = 0, limit: int = 100
+):
+    return db.query(Lawyer).filter(
+        Lawyer.status == "pending"
+    ).offset(skip).limit(limit).all()
 
 def get_lawyer_by_name(db : Session, name):
     return db.query(Lawyer).filter(Lawyer.name == name).first()
@@ -20,9 +33,12 @@ def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
 
 def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).filter(
-        Lawyer.status == "approved"
-    ).offset(skip).limit(limit).all()
-def create_new_lawyer(db : Session, lawyerSchema : LawyerSchema ):
+        Lawyer.status == "Approved"
+    ).offset(skip).limit(limit).all
+
+
+()
+def create_new_lawyer(db : Session, lawyerSchema : LawyerUserSchema ):
     lawyer:Lawyer = Lawyer(
        **lawyerSchema.model_dump()
     )

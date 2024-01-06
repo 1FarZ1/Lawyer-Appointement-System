@@ -19,23 +19,20 @@ router = APIRouter(
 )
 
 
-
-@router.get("/{id}")
-async def get_reviews(request:Request, id , db: Session = Depends(get_db)):    
-    result:Review = reviewRepository.get_review_by_id(db,id)
-    if not result:
+def checkIfLawyer(request:Request):
+    if(request.state.user['role'] != "lawyer"):
         raise HTTPException(
-            status_code=404, detail="Review not found"
+            status_code=401, detail="you cant do this action"
         )
-    return result
 
 
-@router.get("/lawyer/")
+
+
+
+@router.get("/lawyer")
 async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
-    if(request.state.role != "lawyer"):
-        raise HTTPException(
-            status_code=401, detail="Unauthorized"
-        )
+    checkIfLawyer(request)  
+    print(request.state.user)
     id = request.state.user['id']
     result:List[Review] = reviewRepository.get_lawyer_reviews(db,id)
     return result
@@ -44,20 +41,23 @@ async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
 
 
 
-@router.post("/lawyer/")
+
+@router.post("/lawyer")
 async def create_review(reviewSchema:ReviewSchema, request:Request , db: Session = Depends(get_db)):
 
-    if(request.state.role != "user"):
+    checkIfLawyer(request)
+
+    result:List[Review] = reviewRepository.add_review(db,reviewSchema.user_id)
+    return result
+
+
+@router.get("/{id}")
+async def get_reviews(request:Request, id , db: Session = Depends(get_db)):    
+    result:Review = reviewRepository.get_review_by_id(db,id)
+    if not result:
         raise HTTPException(
-            status_code=401, detail="you cant do this action"
+            status_code=404, detail="Review not found"
         )
-    
-
-
-
-
-
-    result:List[Review] = reviewRepository.add_review(db,reviewSchema,user_id)
     return result
 
 ## get lawyer rating

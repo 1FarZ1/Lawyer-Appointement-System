@@ -19,7 +19,7 @@ def check_if_user_reviewed_lawyer(db: Session, user_id, lawyer_id):
     return db.query(Review).filter(Review.user_id == user_id).filter(Review.lawyer_id == lawyer_id).first()
 
 
-def add_review(db:Session,reviewSchema:ReviewSchema,user_id):
+async def add_review(db:Session,reviewSchema:ReviewSchema,user_id):
     review = Review(
         **reviewSchema.model_dump(),
         user_id=user_id
@@ -31,9 +31,9 @@ def add_review(db:Session,reviewSchema:ReviewSchema,user_id):
     return review
 
 
-def get_lawyer_rating(
+async def get_lawyer_rating(
     db: Session, lawyer_id
 ):
 ## calculate the lawyer rating 
     reviews = db.query(Review).filter(Review.lawyer_id == lawyer_id).all()
-    return len(reviews)
+    return reviews

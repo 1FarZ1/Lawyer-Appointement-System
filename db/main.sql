@@ -182,9 +182,9 @@
 
 -- -- insert some reviews , used id i have are 1,6,8,9  and lawyerrs id : 22,23,24,25,26,27,33,34,35
 
--- INSERT INTO reviews (id, lawyer_id, user_id, rating, description)
--- VALUES
---     (1, 22, 1, 5, 'Great lawyer, very knowledgeable'),
+INSERT INTO review (id, lawyer_id, user_id, rating, description)
+VALUES
+    (1, 1, 5, 'Great lawyer, very knowledgeable'),
 --     (2, 23, 1, 4, 'I would recommend this lawyer'),
 --     (3, 24, 1, 3, 'I would not recommend this lawyer'),
 --     (4, 25, 1, 5, 'Great lawyer, very knowledgeable'),

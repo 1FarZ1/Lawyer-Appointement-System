@@ -7,6 +7,9 @@ from fastapi import HTTPException
 
 import app.repository.review as reviewRepository
 from app.schemas import ReviewSchema
+## import permission
+from app.utils.check_permission import check_permission
+from app.enums import RoleEnum
 
 
 
@@ -31,7 +34,9 @@ def checkIfLawyer(request:Request):
 
 @router.get("/lawyer")
 async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
-    checkIfLawyer(request)  
+    await check_permission(request.state.user, [
+        RoleEnum.LAWYER,
+    ])
     print(request.state.user)
     id = request.state.user['id']
     result:List[Review] = reviewRepository.get_lawyer_reviews(db,id)
@@ -42,12 +47,22 @@ async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
 
 
 
-@router.post("/lawyer")
+@router.post("/add")
 async def create_review(reviewSchema:ReviewSchema, request:Request , db: Session = Depends(get_db)):
+    await check_permission(
+        request.state.user, [
+        RoleEnum.USER,
+    ])
+    lawyer_rating = reviewRepository.get_lawyer_rating(db,reviewSchema.lawyer_id)
+    print(lawyer_rating)
 
-    checkIfLawyer(request)
+    # if reviewRepository.check_if_user_reviewed_lawyer(db,request.state.user['id'],reviewSchema.lawyer_id):
+    #     raise HTTPException(
+    #         status_code=401, detail="you already reviewed this lawyer"
+    #     )
+    
 
-    result:List[Review] = reviewRepository.add_review(db,reviewSchema.user_id)
+    result:Review = reviewRepository.add_review(db,reviewSchema,request.state.user['id'])
     return result
 
 
@@ -60,6 +75,4 @@ async def get_reviews(request:Request, id , db: Session = Depends(get_db)):
         )
     return result
 
-## get lawyer rating
-# @router.get("/lawyer/{id}/rating")
-
+x

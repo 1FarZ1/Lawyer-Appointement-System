@@ -24,6 +24,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 

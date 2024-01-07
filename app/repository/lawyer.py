@@ -61,4 +61,12 @@ async def change_status(db:Session,lawyer_id,status):
     db.refresh(lawyer)
     return lawyer
 
+async def update_lawyer_rating(db:Session,lawyer_id,new_rating):
+    lawyer_rating = db.query(Lawyer.rating).filter(Lawyer.id == lawyer_id).first()
+    lawyer_rating = new_rating
+    db.commit()
+    db.refresh(lawyer_rating)
+    return lawyer_rating
+
+
 #def update_profile

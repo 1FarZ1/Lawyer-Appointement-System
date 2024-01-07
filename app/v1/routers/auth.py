@@ -197,7 +197,7 @@ async def google_auth(request: Request):
 async def google_auth_callback(request: Request,db=Depends(get_db)):
     try : 
         token = await oauth.google.authorize_access_token(request)
-        googleUser = token['userinfo']
+        googleUser:dict = token['userinfo']
         email = googleUser['email']
         user = userRepo.get_user_by_email(db=db,email=email)           
         if user:
@@ -209,8 +209,9 @@ async def google_auth_callback(request: Request,db=Depends(get_db)):
                     "status_code": status.HTTP_200_OK, })
         
 
-        fname = googleUser['given_name']
-        lname = googleUser['family_name'] if googleUser['family_name'] else googleUser['name'] 
+        fname = googleUser['given_name']        
+        lname = googleUser['family_name'] if googleUser.get('family_name') else googleUser['name']
+        
         userSchema = GoogleUserSchema(
                 email=email,
                 fname=fname,

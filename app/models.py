@@ -19,7 +19,7 @@ class User(Base):
     createdAt = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
     #updatedAt = Column(DateTime(timezone=True), onupdate=func.now())
     role = Column(Enum(RoleEnum), default="user")
-    lawyer = relationship("Lawyer", back_populates="user")
+    lawyer = relationship("Lawyer", back_populates="user",lazy='joined' )
     review = relationship("Review", back_populates="user")
     appointement = relationship("Appointement", back_populates="user")
 

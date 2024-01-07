@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,Field
 from typing import List, Optional
 
 
@@ -66,7 +66,12 @@ class LawyerSchema(BaseModel) :
     
 
 class ReviewSchema(BaseModel):
-    rating : int
+    ## rating will be between 1 and 5
+    rating: int = Field(
+        ...,
+        gt=0,
+        le=5
+    )
     lawyer_id : int
     description : str
 

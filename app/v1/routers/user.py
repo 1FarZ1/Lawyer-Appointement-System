@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends,File, Request,UploadFile
 from app.enums import RoleEnum
-from app.models import User
+from app.models import Lawyer, User
 from app.config.database import get_db
 from app.models import User
 
@@ -57,10 +57,14 @@ async def get_users(
 
 
 
-@router.get("/me")
-async def get_user(request:Request, db = Depends(get_db)):
+@router.get("/lawyer/me")
+async def get_lawyer_info(request:Request, db = Depends(get_db)):
+
+    await check_permission(
+        user= request.state.user,permission=[RoleEnum.LAWYER]
+    )
     id = request.state.user['id']
-    result:User = userRepository.get_user_by_id(id, db)
+    result = userRepository.get_user_by_id(id, db)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"

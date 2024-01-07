@@ -24,9 +24,9 @@ router = APIRouter(
 
 @router.get("/")
 async def get_appointements(request:Request ,db: Session = Depends(get_db)):
-    check_permission(request.state.user,[
+#     check_permission(request.state.user,[
 
-])
+# ])
     result:List[Appointement] = appointementRepository.get_all_appointements(db)
     return result
 
@@ -55,8 +55,14 @@ async def get_user_appointements(request:Request ,db: Session = Depends(get_db))
 async def create_appointement(request: Request, 
     appointementSchema:AppointementSchema,
                               db: Session = Depends(get_db) ):
-        id = request.state.user['id']
+        
+        check_permission(
+            request.state.user, [
+            RoleEnum.USER,
+        ]
+        )
 
+        id = request.state.user['id']
 
 
         lawyer =  lawyerRep.get_lawyer_by_id(db,appointementSchema.lawyer_id)
@@ -76,7 +82,7 @@ async def respond_appointement(request: Request, approaveSchema:ApproveSchema , 
     check_permission(request.state.user,[
         RoleEnum.LAWYER
 ])
-    if not appointementRepository.get_appointement_by_id(db,id):
+    if not appointementRepository.get_appointement_by_id(db,approaveSchema.id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Appointement not found"
@@ -88,7 +94,7 @@ async def respond_appointement(request: Request, approaveSchema:ApproveSchema , 
             detail="you cant respond to this appointement"
         )
 
-    result = appointementRepository.respond_appointement(db,lawyer_id,approaveSchema.id,"Accepted" if approaveSchema.is_Approved else "Rejected")
+    result = appointementRepository.respond_appointement(db,approaveSchema.id,"Approved" if approaveSchema.is_Approved else "Rejected")
     return result
 
 

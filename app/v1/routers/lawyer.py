@@ -27,6 +27,7 @@ class ApproveSchema(BaseModel):
 
 
 
+
 @router.get("/")
 async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
     check_permission(request.state.user, [
@@ -87,7 +88,7 @@ async def get_lawyer(id: int, db = Depends(get_db)):
         raise HTTPException(
             status_code=404, detail="Lawyer not found"
         )
-    return result
+    return result.review
 
 
 

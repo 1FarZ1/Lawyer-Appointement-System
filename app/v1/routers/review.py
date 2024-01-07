@@ -39,14 +39,9 @@ async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
     await check_permission(request.state.user, [
         RoleEnum.LAWYER,
     ])
-    print(request.state.user)
     id = request.state.user['id']
     result:List[Review] = reviewRepository.get_lawyer_reviews(db,id)
     return result
-
-
-
-
 
 
 @router.post("/add")
@@ -56,19 +51,16 @@ async def create_review(reviewSchema:ReviewSchema, request:Request , db: Session
         RoleEnum.USER,
     ])
     
-    # if reviewRepository.check_if_user_reviewed_lawyer(db,request.state.user['id'],reviewSchema.lawyer_id):
-    #     raise HTTPException(
-    #         status_code=401, detail="you already reviewed this lawyer"
-    #     )
+    if reviewRepository.check_if_user_reviewed_lawyer(db,request.state.user['id'],reviewSchema.lawyer_id):
+        raise HTTPException(
+            status_code=401, detail="you already reviewed this lawyer"
+        )
     
     lawyer_rating:list[Review] =await  reviewRepository.get_lawyer_rating(db,reviewSchema.lawyer_id)
     ratings =[
         review.rating for review in lawyer_rating
     ]
-    
-  
     await lawyerRepo.update_lawyer_rating(db,reviewSchema.lawyer_id,Utils.calculate_rating(ratings,reviewSchema.rating) if len(ratings) > 0 else reviewSchema.rating)
-
     result:Review = await reviewRepository.add_review(db,reviewSchema,request.state.user['id'])
     return result
 

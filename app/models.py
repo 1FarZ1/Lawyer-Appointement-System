@@ -15,7 +15,6 @@ class User(Base):
     lname = Column(String(255))
     email = Column(String(255), unique=True)
     password = Column(String(255),nullable=True)
-    #isGoogleUser = Column(Boolean,default=False)
     createdAt = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
     #updatedAt = Column(DateTime(timezone=True), onupdate=func.now())
     role = Column(Enum(RoleEnum), default="user")
@@ -32,8 +31,6 @@ class Review (Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     lawyer = relationship("Lawyer", back_populates="review")
     user = relationship("User", back_populates="review")
-    # user = relationship("User", back_populates="reviews")
-    # lawyer = relationship("Lawyer", back_populates="reviews")
 
 
 

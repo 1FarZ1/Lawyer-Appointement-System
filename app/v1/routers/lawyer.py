@@ -44,22 +44,21 @@ async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = D
 
 class LawyersSearchFilter(BaseModel):
     specialty: Optional[str] = None
-    location: Optional[str] = None
+    wilaya: Optional[str] = None
+    city: Optional[str] = None
 
     
 @router.get("/user")
 async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, 
-    filters:LawyersSearchFilter = None,
+    filters:LawyersSearchFilter = Depends(),
                                db = Depends(get_db)):
-    check_permission(request.state.user, [
+    await check_permission(request.state.user, [
         RoleEnum.ADMIN,
         RoleEnum.USER,
         RoleEnum.LAWYER,
     ])
-    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize,filters=LawyersSearchFilter(
-        specialty='Droit administratif',
-        location='oran'
-    ))
+    print("Filters:", filters)
+    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize,filters=filters)
     return result
 
    

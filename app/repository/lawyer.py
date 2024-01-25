@@ -1,8 +1,10 @@
+from operator import and_
 from typing import List
 from sqlalchemy.orm import Session
 from app.enums import StatusEnum
-from app.models import Lawyer
+from app.models import Categorie, Lawyer
 from app.schemas import LawyerUserSchema
+from app.v1.routers.lawyer import LawyersSearchFilter
 
 
 
@@ -43,22 +45,29 @@ def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).offset(skip).limit(limit).all()
 
 def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
-    filters = None
+    filters:LawyersSearchFilter = None
                              ):
-       
-    lawyer :List[Lawyer]= db.query(Lawyer).filter(
-            Lawyer.status == StatusEnum.APPROVED,
-        ).offset(skip).limit(limit).all()
+    query = db.query(Lawyer).filter(Lawyer.status == StatusEnum.APPROVED)
+
     if filters:
-        ## filter them
+        # Construct a list of filter conditions
+        filter_conditions = []
+
         if filters.specialty:
-            lawyer = [l for l in lawyer if l.categorie.name == filters.specialty]
+            query = query.join(Lawyer.categorie).filter(Categorie.name == filters.specialty)
 
-        if filters.location:
-            lawyer = [l for l in lawyer if l.wilaya == filters.location]
+        if filters.wilaya:
+            filter_conditions.append(Lawyer.wilaya == filters.wilaya)
 
-        return lawyer
-    return lawyer
+        if filters.city:
+            filter_conditions.append(Lawyer.city == filters.city)
+
+        if filter_conditions:
+            
+            query = query.filter(and_(*filter_conditions))
+
+    return query.offset(skip).limit(limit).all();   
+    
 def create_new_lawyer(db : Session, lawyerSchema : LawyerUserSchema ):
     lawyer:Lawyer = Lawyer(
        **lawyerSchema.model_dump()

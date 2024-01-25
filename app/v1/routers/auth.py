@@ -94,7 +94,7 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
 
 @router.post('/register-lawyer')
 async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
-        isUserExist =   userRepo.get_user_by_email(lawyerSchema.email,db)
+        isUserExist =   userRepo.get_user_by_email(lawyerSchema.email,db)   
         if isUserExist :
             raise HTTPException(
                       status_code=401, detail="email already exist"
@@ -117,6 +117,7 @@ async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
             description = lawyerSchema.description,
             social = lawyerSchema.social,
             wilaya = lawyerSchema.wilaya,
+            city = lawyerSchema.city,
             longitude = lawyerSchema.longitude,
             latitude = lawyerSchema.latitude,
             categorie_id = lawyerSchema.categorie_id,

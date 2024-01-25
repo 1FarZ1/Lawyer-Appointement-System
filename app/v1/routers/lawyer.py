@@ -9,7 +9,7 @@ from app.config.database import get_db
 from app.utils.check_permission import check_permission
 from app.schemas import LawyerSchema    
 
-from app.enums import RoleEnum
+from app.enums import RoleEnum, StatusEnum
 router = APIRouter(
     prefix="/api/lawyers",
     tags=["lawyers"],
@@ -42,7 +42,6 @@ async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = D
     return result
 
 
-## get accepeted lawyers
 @router.get("/user")
 async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
     check_permission(request.state.user, [
@@ -85,8 +84,12 @@ async def approve_lawyer(request:Request,approaveSchema:ApproveSchema,db=Depends
     check_permission(request.state.user,[
         RoleEnum.ADMIN
 ])
-    #lawyer:Lawyer = lawyerRepo.get_lawyer_by_id(db,lawyer_id=approaveSchema.id)
-    result =  await lawyerRepo.change_status(db,approaveSchema.id, "Approved" if approaveSchema.is_Approved else "Rejected")
+    lawyer:Lawyer = lawyerRepo.get_lawyer_by_id(db,lawyer_id=approaveSchema.id)
+    if not lawyer:
+        raise HTTPException(
+            status_code=404, detail="Lawyer not found"
+        )
+    result =  await lawyerRepo.change_status(db,approaveSchema.id, StatusEnum.APPROVED if approaveSchema.is_Approved else StatusEnum.REJECTED)
     return result
 
 
@@ -104,10 +107,7 @@ def update_lawyer_profile(request:Request,lawyer:LawyerUpdateSchema,db=Depends(g
     check_permission(request.state.user,[
         RoleEnum.LAWYER
 ])
-    id = request.state.user['id']
-
-
-
+    
 
     result =  lawyerRepo.update_lawyer_profile(db,lawyer)
     return result

@@ -34,7 +34,6 @@ def get_lawyer_by_name(db : Session, name):
     return db.query(Lawyer).filter(Lawyer.name == name).first()
 
 def get_high_rated_lawyers(db :Session, limit: int = 3):
-    ## get highest rated accepeted lawyers
     return db.query(Lawyer).filter(
         Lawyer.status == StatusEnum.APPROVED
     ).order_by(Lawyer.rating.desc()).limit(limit).all()

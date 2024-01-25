@@ -34,6 +34,12 @@ async def add_review(db:Session,reviewSchema:ReviewSchema,user_id):
 async def get_lawyer_rating(
     db: Session, lawyer_id
 ):
-## calculate the lawyer rating 
     reviews = db.query(Review).filter(Review.lawyer_id == lawyer_id).all()
+    return reviews
+
+
+async def get_lawyer_number_of_rating(
+    db: Session, lawyer_id
+):
+    reviews = db.query(Review).filter(Review.lawyer_id == lawyer_id).count()
     return reviews

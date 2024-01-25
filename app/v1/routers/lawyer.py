@@ -26,8 +26,6 @@ class ApproveSchema(BaseModel):
 
 
 
-class FilterSchema(BaseModel):
-    location:Optional[str]
     
 
 
@@ -46,6 +44,8 @@ class LawyersSearchFilter(BaseModel):
     specialty: Optional[str] = None
     wilaya: Optional[str] = None
     city: Optional[str] = None
+    adress: Optional[str] = None
+    name : Optional[str] = None
 
     
 @router.get("/user")
@@ -58,7 +58,7 @@ async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 10
         RoleEnum.LAWYER,
     ])
     print("Filters:", filters)
-    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize,filters=filters)
+    result:List[Lawyer] = await lawyerRepo.get_all_accepted_lawyers(db,page, pageSize,filters=filters)
     return result
 
    
@@ -125,4 +125,4 @@ async def get_lawyer(id: int, db = Depends(get_db)):
         raise HTTPException(
             status_code=404, detail="Lawyer not found"
         )
-    return result.review
+    return result

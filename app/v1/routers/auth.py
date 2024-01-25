@@ -99,6 +99,8 @@ async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
             raise HTTPException(
                       status_code=401, detail="email already exist"
                   )
+        
+        print(isUserExist)
         lawyerSchema.password = authRepo.hash_password(lawyerSchema.password)
 
         lUserSchema = LUserSchema(

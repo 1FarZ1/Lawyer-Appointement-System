@@ -50,6 +50,11 @@ async def create_review(reviewSchema:ReviewSchema, request:Request , db: Session
         request.state.user, [
         RoleEnum.USER,
     ])
+
+    if not lawyerRepo.get_lawyer_by_id(db,reviewSchema.lawyer_id):
+        raise HTTPException(
+            status_code=404, detail="Lawyer not found"
+        )
     
     if reviewRepository.check_if_user_reviewed_lawyer(db,request.state.user['id'],reviewSchema.lawyer_id):
         raise HTTPException(

@@ -41,7 +41,6 @@ class Lawyer(Base):
    phone = Column(String(30))
    address = Column(String(255))
    description = Column(String(255))
-   rating = Column(Float, default=0)
    image = Column(
         String(255),
         default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png",
@@ -51,10 +50,13 @@ class Lawyer(Base):
    city = Column(String(50))
    longitude = Column(Float)
    latitude = Column(Float)  
+   rating = Column(Float, default=0)
+   n_reviews = Column(Integer, default=0)
    status = Column(String(50), default="pending")  
    status = Column(Enum(StatusEnum), name='lawyer_status',default=StatusEnum.PENDING)
+   experience = Column(String(50))
    user_id = Column(Integer, ForeignKey('user.id'))
-   user = relationship("User", back_populates="lawyer")
+   user = relationship("User", back_populates="lawyer", lazy='joined')
    review = relationship("Review", back_populates="lawyer")
    categorie_id = Column(Integer, ForeignKey('categorie.id'))
    categorie = relationship("Categorie", back_populates="lawyer",lazy='joined')

@@ -6,7 +6,7 @@ def get_user_by_id(user_id, db : Session):
 
 
 def get_user_by_email(email:str, db : Session):
-  return db.query(User.id, User.email, User.fname, User.lname, User.password, User.role, User.createdAt,User.lawyer).filter(User.email == email).first()
+  return db.query(User).filter(User.email == email).first()
 
 def get_all_users(db : Session,skip: int = 0, limit: int = 100, sort: str = None):
     if sort:

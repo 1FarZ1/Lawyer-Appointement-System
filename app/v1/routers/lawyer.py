@@ -46,6 +46,7 @@ class LawyersSearchFilter(BaseModel):
     city: Optional[str] = None
     adress: Optional[str] = None
     name : Optional[str] = None
+    isTopRated : Optional[bool] = None
 
     
 @router.get("/user")

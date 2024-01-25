@@ -82,6 +82,9 @@ async def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
         if filters.adress:
             query = query.filter(Lawyer.address.ilike(f"%{filters.adress}%"))
 
+        if filters.isTopRated:
+            query = query.order_by(Lawyer.rating.desc())
+
 
 
 

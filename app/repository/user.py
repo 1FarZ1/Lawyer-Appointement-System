@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app.models import User
 
 def get_user_by_id(user_id, db : Session):
-  return db.query(User.id, User.email, User.fname, User.lname, User.password, User.role, User.createdAt,User.lawyer).filter(User.id == user_id).first()
+  return db.query(User).filter(User.id == user_id).first()
 
 
 def get_user_by_email(email:str, db : Session):

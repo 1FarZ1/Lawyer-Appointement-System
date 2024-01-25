@@ -30,7 +30,7 @@ async def get_appointements(request:Request ,db: Session = Depends(get_db)):
     result:List[Appointement] = appointementRepository.get_all_appointements(db)
     return result
 
-@router.get("/")
+@router.get("/lawyer")
 async def get_lawyer_appointements(request:Request ,db: Session = Depends(get_db)):
     check_permission(request.state.user,[
         RoleEnum.LAWYER
@@ -40,13 +40,35 @@ async def get_lawyer_appointements(request:Request ,db: Session = Depends(get_db
     return result
 
 
-@router.get('/')
+@router.get('/user')
 async def get_user_appointements(request:Request ,db: Session = Depends(get_db)):
 #     check_permission(request.state.user,[
 #         RoleEnum.USER
 # ])
     id = request.state.user['id']
     result:List[Appointement] = appointementRepository.get_user_appointements(db,user_id=id)
+    return result
+
+
+@router.get('/lawyer/approved')
+async def get_lawyer_approved_appointements(request:Request ,db: Session = Depends(get_db)):
+    check_permission(request.state.user,[
+        RoleEnum.LAWYER
+])
+    id = request.state.user['id']
+    result:List[Appointement] = appointementRepository.get_lawyer_accepted_appointements(db,lawyer_id=id)
+    return result
+
+
+
+
+@router.get('/lawyer/pending')
+async def get_lawyer_pending_appointements(request:Request ,db: Session = Depends(get_db)):
+    check_permission(request.state.user,[
+        RoleEnum.LAWYER
+])
+    id = request.state.user['id']
+    result:List[Appointement] = appointementRepository.get_lawyer_pending_appointements(db,lawyer_id=id)
     return result
 
 

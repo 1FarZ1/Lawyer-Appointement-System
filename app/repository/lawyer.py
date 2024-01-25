@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from app.enums import StatusEnum
 from app.models import Lawyer
 from app.schemas import LawyerUserSchema
 
@@ -26,7 +27,7 @@ def get_all_pending_lawyers(
     db: Session, skip: int = 0, limit: int = 100
 ):
     return db.query(Lawyer).filter(
-        Lawyer.status == "pending"
+        Lawyer.status == StatusEnum.PENDING
     ).offset(skip).limit(limit).all()
 
 def get_lawyer_by_name(db : Session, name):
@@ -35,7 +36,7 @@ def get_lawyer_by_name(db : Session, name):
 def get_high_rated_lawyers(db :Session, limit: int = 3):
     ## get highest rated accepeted lawyers
     return db.query(Lawyer).filter(
-        Lawyer.status == "Approved"
+        Lawyer.status == StatusEnum.APPROVED
     ).order_by(Lawyer.rating.desc()).limit(limit).all()
 
 def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
@@ -43,7 +44,7 @@ def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
 
 def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).filter(
-        Lawyer.status == "Approved"
+        Lawyer.status == StatusEnum.APPROVED
     ).offset(skip).limit(limit).all()
 def create_new_lawyer(db : Session, lawyerSchema : LawyerUserSchema ):
     lawyer:Lawyer = Lawyer(

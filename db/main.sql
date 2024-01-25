@@ -1,8 +1,10 @@
+-- Active: 1701266548715@@127.0.0.1@3306@genie
 -- SELECT * FROM `user`;
 
--- --  get lawyers
+-- --  get lawyer
 
--- SELECT * FROM lawyer
+
+SELECT * FROM lawyer
 
 
 -- DROP TABLE users
@@ -225,4 +227,3 @@ VALUES
 -- SELECT * FROM reviews
 
 -- -- view all the tables
-

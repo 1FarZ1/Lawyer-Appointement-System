@@ -26,6 +26,11 @@ class ApproveSchema(BaseModel):
 
 
 
+class FilterSchema(BaseModel):
+    location:Optional[str]
+    
+
+
 
 
 @router.get("/")
@@ -42,19 +47,11 @@ async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = D
 async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
     check_permission(request.state.user, [
         RoleEnum.ADMIN,
+        RoleEnum.USER,
+        RoleEnum.LAWYER,
     ])
     result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize)
     return result
-
-
-# @router.post("/")
-# async def create_lawyer(lawyer: LawyerSchema, db = Depends(get_db)):
-#         result  = lawyerRepo.create_new_lawyer(db,lawyer)
-#         if not result:
-#             raise HTTPException(
-#                 status_code=500, detail="Internal server error"
-#             )
-#         return result
 
    
 @router.get("/highest_rated")
@@ -68,16 +65,6 @@ async def get_pending_lawyers(request:Request,page: int = 0, pageSize: int = 100
     ])
     result:List[Lawyer] = lawyerRepo.get_all_pending_lawyers(db,page, pageSize)
     return result
-
-@router.get('/accepted')
-async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
-    check_permission(request.state.user, [
-        RoleEnum.USER,
-    ])
-    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize)
-    return result
-
-
 
 
 
@@ -101,6 +88,30 @@ async def approve_lawyer(request:Request,approaveSchema:ApproveSchema,db=Depends
     #lawyer:Lawyer = lawyerRepo.get_lawyer_by_id(db,lawyer_id=approaveSchema.id)
     result =  await lawyerRepo.change_status(db,approaveSchema.id, "Approved" if approaveSchema.is_Approved else "Rejected")
     return result
+
+
+class LawyerUpdateSchema(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    password: Optional[str] = None
+    image: Optional[str] = None
+    experience: Optional[str] = None
+
+@router.patch("/lawyer/update")
+def update_lawyer_profile(request:Request,lawyer:LawyerUpdateSchema,db=Depends(get_db)):
+    check_permission(request.state.user,[
+        RoleEnum.LAWYER
+])
+    id = request.state.user['id']
+
+
+
+
+    result =  lawyerRepo.update_lawyer_profile(db,lawyer)
+    return result
+
 
 
 

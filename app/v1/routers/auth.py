@@ -197,29 +197,29 @@ async def google_auth(request: Request):
 async def google_auth_callback(request: Request,db=Depends(get_db)):
     try : 
         token = await oauth.google.authorize_access_token(request)
-        googleUser:dict = token['userinfo']
-        email = googleUser['email']
-        user = userRepo.get_user_by_email(db=db,email=email)           
-        if user:
-            token = JWT.create_token({"id": user.id, "email": user.email,
-                                  "role": user.role})
-            return JSONResponse({
-            "message": "Welcome to FastAPI from google login ",
-            "token:": token,
-                    "status_code": status.HTTP_200_OK, })
+        # googleUser:dict = token['userinfo']
+        # email = googleUser['email']
+        # user = userRepo.get_user_by_email(db=db,email=email)           
+        # if user:
+        #     token = JWT.create_token({"id": user.id, "email": user.email,
+        #                           "role": user.role})
+        #     return JSONResponse({
+        #     "message": "Welcome to FastAPI from google login ",
+        #     "token:": token,
+        #             "status_code": status.HTTP_200_OK, })
         
 
-        fname = googleUser['given_name']        
-        lname = googleUser['family_name'] if googleUser.get('family_name') else googleUser['name']
+        # fname = googleUser['given_name']        
+        # lname = googleUser['family_name'] if googleUser.get('family_name') else googleUser['name']
         
-        userSchema = GoogleUserSchema(
-                email=email,
-                fname=fname,
-                lname=lname,
-            )
-        user = authRepo.register_user(userSchema,db)
-        token = JWT.create_token({"id": user.id, "email": user.email,
-                                  "role": user.role})
+        # userSchema = GoogleUserSchema(
+        #         email=email,
+        #         fname=fname,
+        #         lname=lname,
+        #     )
+        # user = authRepo.register_user(userSchema,db)
+        # token = JWT.create_token({"id": user.id, "email": user.email,
+        #                           "role": user.role})
 
         return JSONResponse({
         "message": "Welcome to FastAPI from google register",

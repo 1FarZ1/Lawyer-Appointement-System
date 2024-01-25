@@ -1,8 +1,8 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum,Boolean,DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Enum,Boolean,DateTime,JSON
 from app.config.database import Base
 from sqlalchemy.orm import relationship
-from app.enums import RoleEnum
+from app.enums import RoleEnum, StatusEnum
 
 
 
@@ -52,17 +52,13 @@ class Lawyer(Base):
    longitude = Column(Float)
    latitude = Column(Float)  
    status = Column(String(50), default="pending")  
-   ##status = Column(Enum('pending', 'approved', 'rejected', name='lawyer_status'))
+   status = Column(Enum(StatusEnum), name='lawyer_status')
    user_id = Column(Integer, ForeignKey('user.id'))
    user = relationship("User", back_populates="lawyer")
    review = relationship("Review", back_populates="lawyer")
    categorie_id = Column(Integer, ForeignKey('categorie.id'))
    categorie = relationship("Categorie", back_populates="lawyer")
    appointement = relationship("Appointement", back_populates="lawyer")
-
-
-
-
 
 
 class Categorie(Base):

@@ -65,6 +65,7 @@ async def get_lawyer_info(request:Request, db = Depends(get_db)):
     )
     id = request.state.user['id']
     result = userRepository.get_user_by_id(id, db)
+    # print(result.lawyer)
     if not result:
         raise HTTPException(
             status_code=404, detail="User not found"

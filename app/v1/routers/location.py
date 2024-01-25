@@ -10,14 +10,14 @@ router = APIRouter(
 
 @router.get('/wilaya')
 async def get_wilaya():
-    with open('data/wilayas.json',encoding="utf8") as json_file:
+    with open('app/data/wilayas.json',encoding="utf8") as json_file:
         data = json.load(json_file)
         return data
     
 
 @router.get('/cities/{id}')
 async def get_cities(id:int):
-    with open('data/cities.json',encoding="utf8") as json_file:
+    with open('app/data/cities.json',encoding="utf8") as json_file:
         data = json.load(json_file)
         return list(filter(
             lambda x: x['wilaya_id'] == str(id),

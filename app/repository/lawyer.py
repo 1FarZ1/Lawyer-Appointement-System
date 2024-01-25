@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.orm import Session
 from app.enums import StatusEnum
 from app.models import Lawyer
@@ -41,10 +42,23 @@ def get_high_rated_lawyers(db :Session, limit: int = 3):
 def get_all_lawyers(db :Session, skip: int = 0, limit: int = 100):
     return db.query(Lawyer).offset(skip).limit(limit).all()
 
-def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100):
-    return db.query(Lawyer).filter(
-        Lawyer.status == StatusEnum.APPROVED
-    ).offset(skip).limit(limit).all()
+def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
+    filters = None
+                             ):
+       
+    lawyer :List[Lawyer]= db.query(Lawyer).filter(
+            Lawyer.status == StatusEnum.APPROVED,
+        ).offset(skip).limit(limit).all()
+    if filters:
+        ## filter them
+        if filters.specialty:
+            lawyer = [l for l in lawyer if l.categorie.name == filters.specialty]
+
+        if filters.location:
+            lawyer = [l for l in lawyer if l.wilaya == filters.location]
+
+        return lawyer
+    return lawyer
 def create_new_lawyer(db : Session, lawyerSchema : LawyerUserSchema ):
     lawyer:Lawyer = Lawyer(
        **lawyerSchema.model_dump()

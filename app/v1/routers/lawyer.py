@@ -42,14 +42,24 @@ async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = D
     return result
 
 
+class LawyersSearchFilter(BaseModel):
+    specialty: Optional[str] = None
+    location: Optional[str] = None
+
+    
 @router.get("/user")
-async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
+async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, 
+    filters:LawyersSearchFilter = None,
+                               db = Depends(get_db)):
     check_permission(request.state.user, [
         RoleEnum.ADMIN,
         RoleEnum.USER,
         RoleEnum.LAWYER,
     ])
-    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize)
+    result:List[Lawyer] = lawyerRepo.get_all_accepted_lawyers(db,page, pageSize,filters=LawyersSearchFilter(
+        specialty='Droit administratif',
+        location='oran'
+    ))
     return result
 
    
@@ -67,14 +77,6 @@ async def get_pending_lawyers(request:Request,page: int = 0, pageSize: int = 100
 
 
 
-@router.get("/{id}")
-async def get_lawyer(id: int, db = Depends(get_db)):
-    result:Lawyer = lawyerRepo.get_lawyer_by_id(db,id)
-    if not result:
-        raise HTTPException(
-            status_code=404, detail="Lawyer not found"
-        )
-    return result.review
 
 
 
@@ -116,3 +118,12 @@ def update_lawyer_profile(request:Request,lawyer:LawyerUpdateSchema,db=Depends(g
 
 
 
+
+@router.get("/{id}")
+async def get_lawyer(id: int, db = Depends(get_db)):
+    result:Lawyer = lawyerRepo.get_lawyer_by_id(db,id)
+    if not result:
+        raise HTTPException(
+            status_code=404, detail="Lawyer not found"
+        )
+    return result.review

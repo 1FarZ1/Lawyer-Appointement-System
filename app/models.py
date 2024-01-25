@@ -57,7 +57,7 @@ class Lawyer(Base):
    user = relationship("User", back_populates="lawyer")
    review = relationship("Review", back_populates="lawyer")
    categorie_id = Column(Integer, ForeignKey('categorie.id'))
-   categorie = relationship("Categorie", back_populates="lawyer")
+   categorie = relationship("Categorie", back_populates="lawyer",lazy='joined')
    appointement = relationship("Appointement", back_populates="lawyer")
 
 

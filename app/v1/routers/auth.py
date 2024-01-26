@@ -37,7 +37,6 @@ oauth.register(
     client_secret=GOOGLE_CLIENT_SECRET,
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={
-        ## get opneid profile email familyname name 
         'scope': 'openid email profile',
     },
     
@@ -52,18 +51,16 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
             status_code=401, detail="Incorrect email"
         )
 
-    ## if not lawyer  he need to log in with google not with email and pass
     if user.role != "lawyer":
         raise HTTPException(
             status_code=401, detail="you need to login with google"
         )
-    ## get the lawyer from the user
     isMatch  = authRepo.verify_password(loginSchema.password,user.password)
     if not isMatch: 
         return HTTPException(
             status_code=401, detail="Incorrect password"
         )
-    lawyer = lawyerRepo.get_lawyer_by_user(db,user.id)
+    lawyer =  lawyerRepo.get_lawyer_by_user(db,user.id)
     print(lawyer.status)
     if lawyer.status == "pending":
             raise HTTPException(
@@ -123,9 +120,8 @@ async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
             longitude = lawyerSchema.longitude,
             latitude = lawyerSchema.latitude,
             categorie_id = lawyerSchema.categorie_id,
-            user_id = user.id
         )
-        lawyer = lawyerRepo.create_new_lawyer(db,lawyerInfo)
+        lawyer = lawyerRepo.create_new_lawyer(db,lawyerInfo,user.id)
         print(lawyer)
         
         token = JWT.create_token({"id": user.id, "email": user.email,
@@ -200,29 +196,29 @@ async def google_auth(request: Request):
 async def google_auth_callback(request: Request,db=Depends(get_db)):
     try : 
         token = await oauth.google.authorize_access_token(request)
-        # googleUser:dict = token['userinfo']
-        # email = googleUser['email']
-        # user = userRepo.get_user_by_email(db=db,email=email)           
-        # if user:
-        #     token = JWT.create_token({"id": user.id, "email": user.email,
-        #                           "role": user.role})
-        #     return JSONResponse({
-        #     "message": "Welcome to FastAPI from google login ",
-        #     "token:": token,
-        #             "status_code": status.HTTP_200_OK, })
+        googleUser:dict = token['userinfo']
+        email = googleUser['email']
+        user = userRepo.get_user_by_email(db=db,email=email)           
+        if user:
+            token = JWT.create_token({"id": user.id, "email": user.email,
+                                  "role": user.role})
+            return JSONResponse({
+            "message": "Welcome to FastAPI from google login ",
+            "token:": token,
+                    "status_code": status.HTTP_200_OK, })
         
 
-        # fname = googleUser['given_name']        
-        # lname = googleUser['family_name'] if googleUser.get('family_name') else googleUser['name']
+        fname = googleUser['given_name']        
+        lname = googleUser['family_name'] if googleUser.get('family_name') else googleUser['name']
         
-        # userSchema = GoogleUserSchema(
-        #         email=email,
-        #         fname=fname,
-        #         lname=lname,
-        #     )
-        # user = authRepo.register_user(userSchema,db)
-        # token = JWT.create_token({"id": user.id, "email": user.email,
-        #                           "role": user.role})
+        userSchema = GoogleUserSchema(
+                email=email,
+                fname=fname,
+                lname=lname,
+            )
+        user = authRepo.register_user(userSchema,db)
+        token = JWT.create_token({"id": user.id, "email": user.email,
+                                  "role": user.role})
 
         return JSONResponse({
         "message": "Welcome to FastAPI from google register",

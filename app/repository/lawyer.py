@@ -14,11 +14,11 @@ from app.v1.routers.lawyer import LawyersSearchFilter
 
 
 
-async def get_lawyer_by_id(db:Session, lawyer_id):  
-        return await db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
+def get_lawyer_by_id(db:Session, lawyer_id):  
+    return db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
 
-async def get_lawyer_by_email( db: Session, email):
-    return await db.query(Lawyer).filter(Lawyer.email == email).first()
+def get_lawyer_by_email( db: Session, email):
+    return  db.query(Lawyer).filter(Lawyer.email == email).first()
 
 # def get_lawyers_by_name(db: Session, name: str, skip: int = 0, limit: int = 100):
 #     query = db.query(Lawyer).join(Lawyer.user)
@@ -32,16 +32,16 @@ async def get_lawyer_by_email( db: Session, email):
 
 #     return query.offset(skip).limit(limit).all()
 
-async def get_lawyer_by_user(
+def get_lawyer_by_user(
     db: Session, user_id
 ):
-    return await db.query(Lawyer).filter(Lawyer.user_id == user_id).first()
+    return  db.query(Lawyer).filter(Lawyer.user_id == user_id).first()
 
 
-async def get_all_pending_lawyers(
+def get_all_pending_lawyers(
     db: Session, skip: int = 0, limit: int = 100
 ):
-    return await db.query(Lawyer).filter(
+    return  db.query(Lawyer).filter(
         Lawyer.status == StatusEnum.PENDING
     ).offset(skip).limit(limit).all()
 
@@ -90,9 +90,12 @@ async def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
 
     return query.offset(skip).limit(limit).all();   
     
-def create_new_lawyer(db : Session, lawyerSchema : LawyerUserSchema ):
+def create_new_lawyer(db : Session, lawyerSchema : LawyerUserSchema ,
+                      user_id):
     lawyer:Lawyer = Lawyer(
-       **lawyerSchema.model_dump()
+       **lawyerSchema.model_dump(),
+       user_id= user_id,
+
     )
     db.add(lawyer)
     db.commit()

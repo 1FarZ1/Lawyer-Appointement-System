@@ -13,13 +13,15 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="!itsasecret")
 origins = [
-    "http://127.0.0.1:5500/",
+    "http://192.168.43.176:8000/",
+    "*"
+    ##"http://127.0.0.1:5500/",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+   allow_credentials=True,
     allow_methods=["POST", "GET", "PUT", "DELETE"],
     allow_headers=["*"],
 )
@@ -39,6 +41,7 @@ async def auth_middleware(request: Request, call_next):
         (
             "/api/location/",
             "/api/auth/",
+            "/api/lawyers/categories",
         )
     ) :
         response = await call_next(request)

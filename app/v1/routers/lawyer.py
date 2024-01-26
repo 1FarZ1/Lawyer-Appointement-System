@@ -3,7 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 from app.models import Lawyer
-import app.repository.lawyer as lawyerRepo
+import app.repository.lawyer as lawyerRepo 
+import app.repository.category as categoryRepo
 from app.config.database import get_db
 
 from app.utils.check_permission import check_permission
@@ -76,6 +77,11 @@ async def get_pending_lawyers(request:Request,page: int = 0, pageSize: int = 100
     return result
 
 
+@router.get('/categories')
+async def get_lawyer_categories(
+    db = Depends(get_db),
+):
+    return categoryRepo.get_lawyer_categories(db=db)
 
 
 

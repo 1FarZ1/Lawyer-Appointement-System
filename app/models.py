@@ -82,3 +82,8 @@ class Appointement(Base):
     user = relationship("User", back_populates="appointement")
     lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
     lawyer = relationship("Lawyer", back_populates="appointement")
+
+
+
+# class Schedule(Base):
+#     __tablename__ ="Schedule"

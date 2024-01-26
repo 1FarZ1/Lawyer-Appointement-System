@@ -37,7 +37,6 @@ class LawyerUserSchema(BaseModel):
     longitude : float
     latitude : float
     categorie_id : int
-    user_id : int
 
 class LawyerInfoSchema(BaseModel):
     phone : str
@@ -50,7 +49,6 @@ class LawyerInfoSchema(BaseModel):
     longitude : float
     latitude : float
     categorie_id : int
-    user_id : int
 
 
 class LawyerSchema(BaseModel) :

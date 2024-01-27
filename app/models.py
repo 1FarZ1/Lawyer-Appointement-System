@@ -67,7 +67,7 @@ class Lawyer(Base):
    categorie_id = Column(Integer, ForeignKey('categorie.id'))
    categorie = relationship("Categorie", back_populates="lawyer",lazy='joined')
    appointement = relationship("Appointement", back_populates="lawyer")
-   lawyer_schedule = relationship("LawyerSchedule", back_populates="lawyer")
+   lawyer_schedule = relationship("LawyerSchedule", back_populates="lawyer",lazy='joined')
 
 
 class Categorie(Base):
@@ -84,6 +84,7 @@ class Appointement(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     date = Column(String(50))
     time = Column(String(50))
+    day = Column(String(50))
     status = Column(String(50), default="pending")
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship("User", back_populates="appointement")

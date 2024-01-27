@@ -86,8 +86,6 @@ def parse_time_range(time_range: str):
 def is_lawyer_available(appointment_date: str, appointment_time_range: str, lawyer_schedules: list):
     appointment_day = datetime.strptime(appointment_date, "%A").strftime("%A")
     for schedule in lawyer_schedules:
-        
-
         if schedule.day_of_week == appointment_day :
                 appointment_start_time,appointment_end_time = parse_time_range(appointment_time_range)
                 schedule_start_time = datetime.strptime(schedule.start_time, "%H:%M:%S").time()
@@ -104,12 +102,7 @@ def is_lawyer_available(appointment_date: str, appointment_time_range: str, lawy
 
 
                 if schedule_start_time == appointment_start_time and schedule_end_time == appointment_end_time:
-                    return True
-
-
-
-        
-        
+                    return True    
     return False
 
 
@@ -125,11 +118,6 @@ async def create_appointement(request: Request,
         )
 
         id = request.state.user['id']
-
-
-    
-
-
         lawyer =  lawyerRep.get_lawyer_by_id(db,appointementSchema.lawyer_id)
         if not lawyer:
             raise HTTPException(
@@ -137,17 +125,26 @@ async def create_appointement(request: Request,
                 detail="Lawyer not found"
             )
         
+
+        ## check if user and lawyer has already appointement
+        if appointementRepository.check_appointement(db,appointementSchema.lawyer_id,id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You already have appointement with this lawyer"
+            )
+        
     
         result = lawyerRep.get_lawyer_schedules(db,appointementSchema.lawyer_id)
 
-        if is_lawyer_available(appointementSchema.date, appointementSchema.time, result):
-            print("Lawyer is available for appointment.")
-        else:
-            print("Lawyer is not available for appointment at the specified time.")
+        if not is_lawyer_available(appointementSchema.day, appointementSchema.time, result):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Lawyer not available in this time"
+            )
+        
 
 
-
-        # result = appointementRepository.create_appointement(db,appointementSchema,id)
+        result = appointementRepository.create_appointement(db,appointementSchema,id)
         return result 
   
     

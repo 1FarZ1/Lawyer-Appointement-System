@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from typing import List, Optional
 
@@ -42,7 +43,7 @@ async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = D
 
 @router.get('/schedule')
 async def get_lawyer_schedule(request:Request,db = Depends(get_db)):
-    check_permission(request.state.user, [
+    await check_permission(request.state.user, [
         RoleEnum.LAWYER,
     ])
     id = request.state.user['id']
@@ -51,11 +52,25 @@ async def get_lawyer_schedule(request:Request,db = Depends(get_db)):
 
 
     result = lawyerRepo.get_lawyer_schedules(db,lawyer_id=laywer.id)
-    ## add a field  , because in result i  have start time : 8:00:00 and end time 10:00:00 , make the new field like 8am-10am
+    formatted_schedules = []
 
-    
+    for schedule in result:
+        start_time = datetime.strptime(schedule.start_time, "%H:%M:%S")
+        end_time = datetime.strptime(schedule.end_time, "%H:%M:%S")
 
-    return result
+        start_time_str = start_time.strftime("%I%p")
+        end_time_str = end_time.strftime("%I%p")
+
+        time_range = f"{start_time_str}-{end_time_str}"
+
+        schedule_dict = {
+            "id": schedule.id,
+            "lawyer_id": schedule.lawyer_id,
+            "day_of_week": schedule.day_of_week,
+            "time_range": time_range  
+        }
+        formatted_schedules.append(schedule_dict)
+    return formatted_schedules
 
 
 

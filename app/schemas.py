@@ -77,8 +77,10 @@ class ReviewSchema(BaseModel):
 
 class AppointementSchema(BaseModel):
     lawyer_id : int
-    date:str
+    day:str
     time:str
+    date:str
+
 
 
 class CheckEmailSchema(BaseModel):

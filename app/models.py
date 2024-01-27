@@ -46,8 +46,14 @@ class Lawyer(Base):
         default="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png",
    )
    social = Column(String(255))
-   wilaya = Column(String(50))
-   city = Column(String(50))
+   wilaya_id = Column(
+        Integer,
+   )
+   city_id = Column(
+        Integer,
+   )
+    ## certificat_url 
+   certificat_url =  Column( String(255),)
    longitude = Column(Float)
    latitude = Column(Float)  
    rating = Column(Float, default=0)
@@ -61,6 +67,7 @@ class Lawyer(Base):
    categorie_id = Column(Integer, ForeignKey('categorie.id'))
    categorie = relationship("Categorie", back_populates="lawyer",lazy='joined')
    appointement = relationship("Appointement", back_populates="lawyer")
+   lawyer_schedule = relationship("LawyerSchedule", back_populates="lawyer")
 
 
 class Categorie(Base):
@@ -85,5 +92,25 @@ class Appointement(Base):
 
 
 
+## a Schedule Class 
+
 # class Schedule(Base):
-#     __tablename__ ="Schedule"
+#     __tablename__ = "schedule"
+#     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+#     date = Column(String(50))
+#     time = Column(String(50))
+#     lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
+#     lawyer = relationship("Lawyer", back_populates="schedule")
+    
+
+class LawyerSchedule(Base):
+    __tablename__ = 'lawyer_schedule'
+
+    id = Column(Integer, primary_key=True)
+    lawyer_id = Column(Integer)
+    day_of_week = Column(String(200))
+    start_time = Column(String(200))
+    end_time = Column(String(200))
+    lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
+    lawyer = relationship("Lawyer", back_populates="lawyer_schedule")
+

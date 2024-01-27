@@ -91,13 +91,13 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
 
 @router.post('/register-lawyer')
 async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
+    # try:
         isUserExist =   userRepo.get_user_by_email(lawyerSchema.email,db)   
         if isUserExist :
             raise HTTPException(
                       status_code=401, detail="email already exist"
                   )
         
-        print(isUserExist)
         lawyerSchema.password = authRepo.hash_password(lawyerSchema.password)
 
         lUserSchema = LUserSchema(
@@ -115,14 +115,13 @@ async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
             address = lawyerSchema.address,
             description = lawyerSchema.description,
             social = lawyerSchema.social,
-            wilaya = lawyerSchema.wilaya,
-            city = lawyerSchema.city,
+            wilaya_id =  lawyerSchema.wilaya_id,
+            city_id = lawyerSchema.city_id,
             longitude = lawyerSchema.longitude,
             latitude = lawyerSchema.latitude,
             categorie_id = lawyerSchema.categorie_id,
         )
         lawyer = lawyerRepo.create_new_lawyer(db,lawyerInfo,user.id)
-        print(lawyer)
         
         token = JWT.create_token({"id": user.id, "email": user.email,
                                   "role": user.role})
@@ -146,6 +145,12 @@ async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
 
 @router.post('/check-email')
 async def check_email(chekEmailSchema: CheckEmailSchema, db = Depends(get_db)):
+
+    ## check if it has email schema
+
+    
+
+
     user = userRepo.get_user_by_email(chekEmailSchema.email,db)
     if not user:
         return JSONResponse({

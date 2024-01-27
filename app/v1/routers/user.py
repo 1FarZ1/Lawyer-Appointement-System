@@ -41,7 +41,7 @@ def saveFileToUploads(image) -> dict:
 
 
 
-@router.get("/")       ##dependencies=[Depends(check_permission(permission=[RoleEnum.ADMIN]))])    
+@router.get("/")       
 async def get_users(
     request: Request,
     page: int = 0, pageSize: int = 100,

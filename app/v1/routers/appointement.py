@@ -87,12 +87,17 @@ async def create_appointement(request: Request,
         id = request.state.user['id']
 
 
+    
+
+
         lawyer =  lawyerRep.get_lawyer_by_id(db,appointementSchema.lawyer_id)
         if not lawyer:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Lawyer not found"
             )
+        
+        ## check if lawyer availaible
 
         result = appointementRepository.create_appointement(db,appointementSchema,id)
         return result 

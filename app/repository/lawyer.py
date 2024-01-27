@@ -118,4 +118,3 @@ async def update_lawyer_rating(db:Session,lawyer_id,new_rating):
     return lawyer
 
 
-#def update_profile

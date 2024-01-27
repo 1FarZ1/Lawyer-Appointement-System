@@ -32,8 +32,8 @@ class LawyerUserSchema(BaseModel):
     description : str
     # schedule : List[str]
     social : str
-    wilaya : str
-    city:str
+    wilaya_id : int
+    city_id:int
     longitude : float
     latitude : float
     categorie_id : int
@@ -44,8 +44,8 @@ class LawyerInfoSchema(BaseModel):
     description : str
     # schedule : List[str]
     social : str
-    wilaya : str
-    city : str
+    wilaya_id : int
+    city_id : int
     longitude : float
     latitude : float
     categorie_id : int

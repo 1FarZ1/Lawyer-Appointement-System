@@ -12,6 +12,7 @@ import datetime
 
 from app.repository import user as userRepository
 from app.utils.check_permission import check_permission
+from app.utils.utils import Utils
 
 
 
@@ -24,18 +25,6 @@ router = APIRouter(
     # dependencies=[Depends(auth_middleware)],
     )
 
-def saveFileToUploads(image) -> dict:
-    import os
-    basePath = "uploads/" +  datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S").replace(" ", "_").replace(":", "-").replace(".", "-")
-    imagePath = (f"{basePath}/{image.filename}")
-    if not os.path.exists(basePath):
-        os.makedirs(basePath)    
-    with open(imagePath, "wb+") as file_object:
-        file_object.write(image.file.read())    
-    return {
-        "info": f"file '{image.filename}' saved at '{imagePath}'",
-        "path": imagePath
-    }
 
 
 
@@ -112,7 +101,7 @@ async def update_image(request:Request,image: Union[UploadFile, None] = None, db
             status_code=404, detail="No image sent"
         )    
     id = request.state.user['id']
-    imagePath = saveFileToUploads(image)['path']
+    imagePath = Utils.saveFileToUploads(image)['path']
     result = userRepository.update_image(id, imagePath,db)
     if not result:
         raise HTTPException(

@@ -1,5 +1,7 @@
+import inspect
+from fastapi import Form
 from pydantic import BaseModel,Field
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
 
 class LoginSchema(BaseModel):
@@ -21,7 +23,22 @@ class LUserSchema(BaseModel):
     password: str 
     
 
+def as_form(cls):
+    new_params = [
+        inspect.Parameter(
+            field_name,
+            inspect.Parameter.POSITIONAL_ONLY,
+            default=model_field.default,
+            annotation=Annotated[model_field.annotation, model_field.metadata, Form()],
+        )
+        for field_name, model_field in cls.model_fields.items()
+    ]
 
+    cls.__signature__ = cls.__signature__.replace(parameters=new_params)
+
+    return cls
+
+# @as_form
 class LawyerUserSchema(BaseModel):
     fname: str
     lname: str
@@ -32,11 +49,49 @@ class LawyerUserSchema(BaseModel):
     description : str
     # schedule : List[str]
     social : str
-    wilaya_id : int
-    city_id:int
-    longitude : float
-    latitude : float
-    categorie_id : int
+    wilaya_id : str
+    city_id:str
+    longitude : str
+    latitude : str
+    categorie_id : str
+
+class LawyerUserSchemaForm:
+    def __init__(
+        self,
+        fname: str = Form(...),
+        lname: str = Form(...),
+        email: str = Form(...),
+        password: str = Form(...),
+        phone : str = Form(...),
+        address : str = Form(...),
+        description : str = Form(...),
+        # schedule : List[str]
+        social : str = Form(...),
+        wilaya_id : str = Form(...),
+        city_id:str = Form(...),
+        longitude : str = Form(...),
+        latitude : str = Form(...),
+        categorie_id : str = Form(...),
+    ):
+        self.fname = fname
+        self.lname = lname
+        self.email = email
+        self.password = password
+        self.phone = phone
+        self.address = address
+        self.description = description
+        self.social = social
+        self.wilaya_id = wilaya_id
+        self.city_id = city_id
+        self.longitude = longitude
+        self.latitude = latitude
+        self.categorie_id = categorie_id
+
+
+        ## to string
+    def __repr__(self):
+        return f"User({self.fname!r}, {self.lname!r}, {self.email!r}, {self.password!r}, {self.phone!r}, {self.address!r}, {self.description!r}, {self.social!r}, {self.wilaya_id!r}, {self.city_id!r}, {self.longitude!r}, {self.latitude!r}, {self.categorie_id!r})"
+    
 
 class LawyerInfoSchema(BaseModel):
     phone : str
@@ -44,25 +99,16 @@ class LawyerInfoSchema(BaseModel):
     description : str
     # schedule : List[str]
     social : str
-    wilaya_id : int
-    city_id : int
-    longitude : float
-    latitude : float
-    categorie_id : int
+    certificat_url:str
+    wilaya_id : str
+    city_id : str
+    longitude : str
+    latitude : str
+    categorie_id : str
 
 
-class LawyerSchema(BaseModel) :
-    phone : str
-    address : str
-    description : str
-    # schedule : List[str]
-    social : str
-    wilaya : str
-    longitude : float
-    latitude : float
-    categorie_id : int
-    user_id : int
-    
+
+
     
 
 class ReviewSchema(BaseModel):

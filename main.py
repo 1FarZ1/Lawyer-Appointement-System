@@ -38,6 +38,7 @@ non_authenticated_routes = [
     "/api/lawyers",
     "/api/lawyers/categories",
     "/api/lawyers/highest_rated",
+    
 ]
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
@@ -46,6 +47,7 @@ async def auth_middleware(request: Request, call_next):
         (
             "/api/location/",
             "/api/auth/",
+            "/uploads/",
         )
     ) :
         response = await call_next(request)

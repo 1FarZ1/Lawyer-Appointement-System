@@ -1,16 +1,17 @@
 import secrets
 from urllib.parse import urlencode
-from fastapi import APIRouter, Depends, HTTPException,status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile,status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app.enums import RoleEnum, StatusEnum
-from app.schemas import CheckEmailSchema, LoginSchema, GoogleUserSchema,LawyerUserSchema,LUserSchema,LawyerInfoSchema
+from app.schemas import CheckEmailSchema, LawyerUserSchemaForm, LoginSchema, GoogleUserSchema,LawyerUserSchema,LUserSchema,LawyerInfoSchema
 from app.models import User
 from authlib.integrations.starlette_client import OAuth, OAuthError  
 from starlette.requests import Request
 from app.config.database import get_db
 from app.repository import user as userRepo,auth as authRepo, lawyer as lawyerRepo
 from app.utils.jwt import JWT
+from app.utils.utils import Utils
 
 
 
@@ -85,14 +86,42 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
 
 
 
+## function to cast array of numbers  to chosen type
+def cast_array(array,type):
+    return list(map(type,array))
 
 
 
 
 
 @router.post('/register-lawyer')
-async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
+async def register(lawyerSchema: LawyerUserSchemaForm = Depends() ,
+                   
+                     certificat: UploadFile = File(...), 
+                   db = Depends(get_db)):
     # try:
+        print(lawyerSchema)
+
+        
+        cast_array(
+             [
+                lawyerSchema.wilaya_id,
+                lawyerSchema.city_id,
+                lawyerSchema.categorie_id,
+             ]
+             ,
+                int 
+        )
+
+        cast_array(
+             [
+                lawyerSchema.longitude,
+                lawyerSchema.latitude,
+             ],
+                float   
+        )
+
+
         isUserExist =   userRepo.get_user_by_email(lawyerSchema.email,db)   
         if isUserExist :
             raise HTTPException(
@@ -111,11 +140,13 @@ async def register(lawyerSchema: LawyerUserSchema, db = Depends(get_db)):
         user = authRepo.register_user(lUserSchema,db,role=RoleEnum.LAWYER)
 
 
+        path =  Utils.saveFileToUploads(certificat)['path']
         lawyerInfo = LawyerInfoSchema(
             phone = lawyerSchema.phone,
             address = lawyerSchema.address,
             description = lawyerSchema.description,
             social = lawyerSchema.social,
+            certificat_url=path,
             wilaya_id =  lawyerSchema.wilaya_id,
             city_id = lawyerSchema.city_id,
             longitude = lawyerSchema.longitude,

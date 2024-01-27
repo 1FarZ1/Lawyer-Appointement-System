@@ -9,7 +9,6 @@ import app.repository.category as categoryRepo
 from app.config.database import get_db
 
 from app.utils.check_permission import check_permission
-from app.schemas import LawyerSchema    
 
 from app.enums import RoleEnum, StatusEnum
 router = APIRouter(

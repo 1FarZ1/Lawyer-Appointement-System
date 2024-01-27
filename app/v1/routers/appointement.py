@@ -11,6 +11,8 @@ from app.repository import appointement as appointementRepository ,user as userR
 from app.schemas import AppointementSchema
 from app.utils.check_permission import check_permission
 from app.v1.routers.lawyer import ApproveSchema
+from datetime import datetime
+
 
 
 
@@ -73,12 +75,50 @@ async def get_lawyer_pending_appointements(request:Request ,db: Session = Depend
 
 
 
+
+def parse_time(time_str: str):
+    return datetime.strptime(time_str, "%I%p").time()
+
+
+def parse_time_range(time_range: str):
+    start_time, end_time = time_range.split("-")
+    return parse_time(start_time), parse_time(end_time)
+def is_lawyer_available(appointment_date: str, appointment_time_range: str, lawyer_schedules: list):
+    appointment_day = datetime.strptime(appointment_date, "%A").strftime("%A")
+    for schedule in lawyer_schedules:
+        
+
+        if schedule.day_of_week == appointment_day :
+                appointment_start_time,appointment_end_time = parse_time_range(appointment_time_range)
+                schedule_start_time = datetime.strptime(schedule.start_time, "%H:%M:%S").time()
+                schedule_end_time = datetime.strptime(schedule.end_time, "%H:%M:%S").time()
+
+                print(
+                    f"Checking schedule: {schedule.day_of_week} {schedule_start_time}-{schedule_end_time}"
+                )
+        
+                print(
+                    f"Checking appointment: {appointment_day} {appointment_start_time}-{appointment_end_time}"
+                )
+
+
+
+                if schedule_start_time == appointment_start_time and schedule_end_time == appointment_end_time:
+                    return True
+
+
+
+        
+        
+    return False
+
+
 @router.post("/create")
 async def create_appointement(request: Request, 
     appointementSchema:AppointementSchema,
                               db: Session = Depends(get_db) ):
         
-        check_permission(
+        await check_permission(
             request.state.user, [
             RoleEnum.USER,
         ]
@@ -97,9 +137,17 @@ async def create_appointement(request: Request,
                 detail="Lawyer not found"
             )
         
-        ## check if lawyer availaible
+    
+        result = lawyerRep.get_lawyer_schedules(db,appointementSchema.lawyer_id)
 
-        result = appointementRepository.create_appointement(db,appointementSchema,id)
+        if is_lawyer_available(appointementSchema.date, appointementSchema.time, result):
+            print("Lawyer is available for appointment.")
+        else:
+            print("Lawyer is not available for appointment at the specified time.")
+
+
+
+        # result = appointementRepository.create_appointement(db,appointementSchema,id)
         return result 
   
     

@@ -63,7 +63,7 @@ async def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
 
     if filters:
         if filters.specialty:
-            query =  query.join(Lawyer.categorie).filter(Categorie.name == filters.specialty)
+            query =  query.join(Lawyer.categorie).filter(Categorie.id == filters.specialty)
 
         if filters.name:          
             query =  query.join(Lawyer.user).filter(
@@ -73,11 +73,12 @@ async def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
                 )
             )
 
-        if filters.wilaya:
-            query = query.filter(Lawyer.wilaya == filters.wilaya)
-
-        if filters.city:
-            query = query.filter(Lawyer.city == filters.city)
+        if filters.wilaya_id:
+            query = query.filter(Lawyer.wilaya_id == filters.wilaya_id)
+            ## filter by city only if wilaya_id is not null
+            if filters.city_id:
+                query = query.filter(Lawyer.city_id == filters.city_id)
+    
 
         if filters.adress:
             query = query.filter(Lawyer.address.ilike(f"%{filters.adress}%"))
@@ -117,4 +118,9 @@ async def update_lawyer_rating(db:Session,lawyer_id,new_rating):
     db.refresh(lawyer)
     return lawyer
 
+
+## get lawyer schedules
+def get_lawyer_schedules(db:Session,lawyer_id):
+    lawyer = db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
+    return lawyer.lawyer_schedule
 

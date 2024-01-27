@@ -40,11 +40,21 @@ async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = D
     result:List[Lawyer] = lawyerRepo.get_all_lawyers(db,page, pageSize)
     return result
 
+@router.get('/schedule')
+async def get_lawyer_schedule(request:Request,db = Depends(get_db)):
+    check_permission(request.state.user, [
+        RoleEnum.LAWYER,
+    ])
+    id = request.state.user['id']
+    result = lawyerRepo.get_lawyer_schedules(db,id)
+    return result
+
+
 
 class LawyersSearchFilter(BaseModel):
-    specialty: Optional[str] = None
-    wilaya: Optional[str] = None
-    city: Optional[str] = None
+    specialty: Optional[int] = None
+    wilaya_id: Optional[int] = None
+    city_id: Optional[int] = None
     adress: Optional[str] = None
     name : Optional[str] = None
     isTopRated : Optional[bool] = None
@@ -54,11 +64,11 @@ class LawyersSearchFilter(BaseModel):
 async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, 
     filters:LawyersSearchFilter = Depends(),
                                db = Depends(get_db)):
-    await check_permission(request.state.user, [
-        RoleEnum.ADMIN,
-        RoleEnum.USER,
-        RoleEnum.LAWYER,
-    ])
+    # await check_permission(request.state.user, [
+    #     RoleEnum.ADMIN,
+    #     RoleEnum.USER,
+    #     RoleEnum.LAWYER,
+    # ])
     print("Filters:", filters)
     result:List[Lawyer] = await lawyerRepo.get_all_accepted_lawyers(db,page, pageSize,filters=filters)
     return result

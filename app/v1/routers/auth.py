@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 from fastapi import APIRouter, Depends, HTTPException,status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from app.enums import RoleEnum
+from app.enums import RoleEnum, StatusEnum
 from app.schemas import CheckEmailSchema, LoginSchema, GoogleUserSchema,LawyerUserSchema,LUserSchema,LawyerInfoSchema
 from app.models import User
 from authlib.integrations.starlette_client import OAuth, OAuthError  
@@ -45,10 +45,11 @@ oauth.register(
 
 @router.post('/login')
 async def login(loginSchema: LoginSchema, db = Depends(get_db)):
+    print(loginSchema)
     user = userRepo.get_user_by_email(loginSchema.email,db)
     if not user:
         raise HTTPException(
-            status_code=401, detail="Incorrect email"
+            status_code=401, detail="User With this credentials does not exist "
         )
 
     if user.role != "lawyer":
@@ -57,12 +58,12 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
         )
     isMatch  = authRepo.verify_password(loginSchema.password,user.password)
     if not isMatch: 
-        return HTTPException(
+        raise HTTPException(
             status_code=401, detail="Incorrect password"
         )
     lawyer =  lawyerRepo.get_lawyer_by_user(db,user.id)
     print(lawyer.status)
-    if lawyer.status == "pending":
+    if lawyer.status == StatusEnum.PENDING:
             raise HTTPException(
                 status_code=401, detail="your account waiting for approvatation"
             )   
@@ -148,7 +149,7 @@ async def check_email(chekEmailSchema: CheckEmailSchema, db = Depends(get_db)):
 
     ## check if it has email schema
 
-    
+
 
 
     user = userRepo.get_user_by_email(chekEmailSchema.email,db)

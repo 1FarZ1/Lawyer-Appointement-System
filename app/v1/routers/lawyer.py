@@ -34,9 +34,9 @@ class ApproveSchema(BaseModel):
 
 @router.get("/")
 async def get_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
-    check_permission(request.state.user, [
-        RoleEnum.ADMIN,
-    ])
+    # check_permission(request.state.user, [
+    #     RoleEnum.ADMIN,
+    # ])
     result:List[Lawyer] = lawyerRepo.get_all_lawyers(db,page, pageSize)
     return result
 
@@ -46,7 +46,15 @@ async def get_lawyer_schedule(request:Request,db = Depends(get_db)):
         RoleEnum.LAWYER,
     ])
     id = request.state.user['id']
-    result = lawyerRepo.get_lawyer_schedules(db,id)
+
+    laywer :Lawyer = lawyerRepo.get_lawyer_by_user(db,id)
+
+
+    result = lawyerRepo.get_lawyer_schedules(db,lawyer_id=laywer.id)
+    ## add a field  , because in result i  have start time : 8:00:00 and end time 10:00:00 , make the new field like 8am-10am
+
+    
+
     return result
 
 
@@ -64,11 +72,6 @@ class LawyersSearchFilter(BaseModel):
 async def get_accepted_lawyers(request:Request,page: int = 0, pageSize: int = 100, 
     filters:LawyersSearchFilter = Depends(),
                                db = Depends(get_db)):
-    # await check_permission(request.state.user, [
-    #     RoleEnum.ADMIN,
-    #     RoleEnum.USER,
-    #     RoleEnum.LAWYER,
-    # ])
     print("Filters:", filters)
     result:List[Lawyer] = await lawyerRepo.get_all_accepted_lawyers(db,page, pageSize,filters=filters)
     return result
@@ -80,9 +83,9 @@ async def get_highest_rated(limit: int = 4, db = Depends(get_db)):
 
 @router.get('/pending')
 async def get_pending_lawyers(request:Request,page: int = 0, pageSize: int = 100, db = Depends(get_db)):
-    check_permission(request.state.user, [
-        RoleEnum.USER,
-    ])
+    # check_permission(request.state.user, [
+    #     RoleEnum.USER,
+    # ])
     result:List[Lawyer] = lawyerRepo.get_all_pending_lawyers(db,page, pageSize)
     return result
 

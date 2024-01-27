@@ -1,3 +1,4 @@
+import datetime
 from operator import and_, or_
 from typing import List
 from sqlalchemy.orm import Session
@@ -19,18 +20,6 @@ def get_lawyer_by_id(db:Session, lawyer_id):
 
 def get_lawyer_by_email( db: Session, email):
     return  db.query(Lawyer).filter(Lawyer.email == email).first()
-
-# def get_lawyers_by_name(db: Session, name: str, skip: int = 0, limit: int = 100):
-#     query = db.query(Lawyer).join(Lawyer.user)
-
-#     query = query.filter(
-#         or_(
-#             User.fname.ilike(f"%{name}%"),  
-#             User.lname.ilike(f"%{name}%")   
-#         )
-#     )
-
-#     return query.offset(skip).limit(limit).all()
 
 def get_lawyer_by_user(
     db: Session, user_id
@@ -75,7 +64,6 @@ async def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
 
         if filters.wilaya_id:
             query = query.filter(Lawyer.wilaya_id == filters.wilaya_id)
-            ## filter by city only if wilaya_id is not null
             if filters.city_id:
                 query = query.filter(Lawyer.city_id == filters.city_id)
     
@@ -85,9 +73,6 @@ async def get_all_accepted_lawyers(db :Session, skip: int = 0, limit: int = 100,
 
         if filters.isTopRated:
             query = query.order_by(Lawyer.rating.desc())
-
-
-
 
     return query.offset(skip).limit(limit).all();   
     
@@ -121,6 +106,27 @@ async def update_lawyer_rating(db:Session,lawyer_id,new_rating):
 
 ## get lawyer schedules
 def get_lawyer_schedules(db:Session,lawyer_id):
-    lawyer = db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
-    return lawyer.lawyer_schedule
+    lawyer:Lawyer = db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
+
+    schedules = lawyer.lawyer_schedule
+    formatted_schedules = []
+
+    for schedule in schedules:
+        start_time = datetime.datetime.strptime(schedule.start_time, "%H:%M:%S")
+        end_time = datetime.datetime.strptime(schedule.end_time, "%H:%M:%S")
+
+        start_time_str = start_time.strftime("%I%p")
+        end_time_str = end_time.strftime("%I%p")
+
+        time_range = f"{start_time_str}-{end_time_str}"
+
+        schedule_dict = {
+            "id": schedule.id,
+            "lawyer_id": schedule.lawyer_id,
+            "day_of_week": schedule.day_of_week,
+            "time_range": time_range  
+        }
+        formatted_schedules.append(schedule_dict)
+
+    return formatted_schedules    
 

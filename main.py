@@ -33,6 +33,11 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 non_authenticated_routes = [
     "/","/docs",'/openapi.json',
+    "/api/lawyers/user",
+    "/api/lawyers/pending",
+    "/api/lawyers",
+    "/api/lawyers/categories",
+    "/api/lawyers/highest_rated",
 ]
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
@@ -41,8 +46,6 @@ async def auth_middleware(request: Request, call_next):
         (
             "/api/location/",
             "/api/auth/",
-            "/api/lawyers/",
-            "/api/lawyers/categories",
         )
     ) :
         response = await call_next(request)

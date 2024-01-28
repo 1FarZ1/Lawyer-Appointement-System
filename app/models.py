@@ -30,7 +30,7 @@ class Review (Base):
     lawyer_id = Column(Integer, ForeignKey('lawyer.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
     lawyer = relationship("Lawyer", back_populates="review")
-    user = relationship("User", back_populates="review")
+    user = relationship("User", back_populates="review",lazy='joined')
 
 
 

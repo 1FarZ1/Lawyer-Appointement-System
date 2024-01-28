@@ -36,9 +36,9 @@ def checkIfLawyer(request:Request):
 
 @router.get("/lawyer")
 async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
-    await check_permission(request.state.user, [
-        RoleEnum.LAWYER,
-    ])
+    # await check_permission(request.state.user, [
+    #     RoleEnum.LAWYER,
+    # ])
     id = request.state.user['id']
     result:List[Review] = reviewRepository.get_lawyer_reviews(db,id)
     return result
@@ -46,20 +46,20 @@ async def get_lawyer_reviews( request:Request , db: Session = Depends(get_db)):
 
 @router.post("/add")
 async def create_review(reviewSchema:ReviewSchema, request:Request , db: Session = Depends(get_db)):
-    await check_permission(
-        request.state.user, [
-        RoleEnum.USER,
-    ])
+    # await check_permission(
+    #     request.state.user, [
+    #     RoleEnum.USER,
+    # ])
 
     if not lawyerRepo.get_lawyer_by_id(db,reviewSchema.lawyer_id):
         raise HTTPException(
             status_code=404, detail="Lawyer not found"
         )
     
-    if reviewRepository.check_if_user_reviewed_lawyer(db,request.state.user['id'],reviewSchema.lawyer_id):
-        raise HTTPException(
-            status_code=401, detail="you already reviewed this lawyer"
-        )
+    # if reviewRepository.check_if_user_reviewed_lawyer(db,request.state.user['id'],reviewSchema.lawyer_id):
+    #     raise HTTPException(
+    #         status_code=401, detail="you already reviewed this lawyer"
+    #     )
     
     lawyer_rating:list[Review] =await  reviewRepository.get_lawyer_rating(db,reviewSchema.lawyer_id)
     ratings =[
@@ -70,9 +70,13 @@ async def create_review(reviewSchema:ReviewSchema, request:Request , db: Session
     return result
 
 
-@router.get("/{id}")
-async def get_reviews(request:Request, id , db: Session = Depends(get_db)):    
-    result:Review = reviewRepository.get_review_by_id(db,id)
+@router.get("/lawyer/{id}")
+async def get_reviews(request:Request, id , db: Session = Depends(get_db)): 
+    if not lawyerRepo.get_lawyer_by_id(db,id):
+        raise HTTPException(
+            status_code=404, detail="Lawyer not found"
+        )   
+    result:Review = reviewRepository.get_lawyer_reviews(db,id)
     if not result:
         raise HTTPException(
             status_code=404, detail="Review not found"

@@ -13,7 +13,7 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="!itsasecret")
 origins = [
-    "http://192.168.43.176:8000/",
+    "http://192.168.43.176:8001/",
     "*"
     ##"http://127.0.0.1:5500/",
 ]
@@ -21,9 +21,10 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-   allow_credentials=True,
-    allow_methods=["POST", "GET", "PUT", "DELETE"],
+    allow_credentials=True,
+    allow_methods=["POST", "GET", "PUT","PATCH","DELETE","OPTIONS"],
     allow_headers=["*"],
+
 )
 
 
@@ -33,9 +34,8 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 non_authenticated_routes = [
     "/","/docs",'/openapi.json',
-    "/api/lawyers/user",
+    "/api/lawyers/user",    
     "/api/lawyers/pending",
-    "/api/lawyers",
     "/api/lawyers/categories",
     "/api/lawyers/highest_rated",
     
@@ -48,11 +48,15 @@ async def auth_middleware(request: Request, call_next):
             "/api/location/",
             "/api/auth/",
             "/uploads/",
+            "/api/lawyers/",
+            "/api/reviews/lawyer",
+
         )
     ) :
         response = await call_next(request)
         return response
     token = request.headers.get("Authorization")
+    print(token)
     token = token.split(" ")[1] if token else None
     if token:
         try:

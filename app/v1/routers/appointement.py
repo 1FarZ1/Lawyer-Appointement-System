@@ -124,26 +124,25 @@ async def create_appointement(request: Request,
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Lawyer not found"
             )
-        
-
-        ## check if user and lawyer has already appointement
-        if appointementRepository.check_appointement(db,appointementSchema.lawyer_id,id):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="You already have appointement with this lawyer"
-            )
-        
-    
+        # if appointementRepository.check_appointement_with_user(db,appointementSchema.lawyer_id,id):
+        #     raise HTTPException(
+        #         status_code=status.HTTP_400_BAD_REQUEST,
+        #         detail="You already have appointement with this lawyer"
+        #     )
+                
         result = lawyerRep.get_lawyer_schedules(db,appointementSchema.lawyer_id)
-
         if not is_lawyer_available(appointementSchema.day, appointementSchema.time, result):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Lawyer not available in this time"
             )
-        
 
-
+        if appointementRepository.check_appointement_with_lawyer(db,appointementSchema):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Lawyer has other plans"
+            )
+            
         result = appointementRepository.create_appointement(db,appointementSchema,id)
         return result 
   

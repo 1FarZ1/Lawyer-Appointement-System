@@ -1,7 +1,7 @@
 import inspect
 from fastapi import Form
 from pydantic import BaseModel,Field
-from typing import Annotated, List, Optional
+from typing import Annotated, Dict, List, Optional
 
 
 class LoginSchema(BaseModel):
@@ -65,13 +65,15 @@ class LawyerUserSchemaForm:
         phone : str = Form(...),
         address : str = Form(...),
         description : str = Form(...),
-        # schedule : List[str]
+        ## MAKE THE schedule like this [{time:"tt",day"monday"},{time:"tt",day"friday"}]
+        # schedule: List[str] = Form(...),  # Accept as a list of dictionaries
         social : str = Form(...),
         wilaya_id : str = Form(...),
         city_id:str = Form(...),
         longitude : str = Form(...),
         latitude : str = Form(...),
         categorie_id : str = Form(...),
+
     ):
         self.fname = fname
         self.lname = lname
@@ -80,6 +82,7 @@ class LawyerUserSchemaForm:
         self.phone = phone
         self.address = address
         self.description = description
+        # self.schedule = schedule
         self.social = social
         self.wilaya_id = wilaya_id
         self.city_id = city_id

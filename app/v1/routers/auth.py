@@ -74,7 +74,7 @@ async def login(loginSchema: LoginSchema, db = Depends(get_db)):
     token = JWT.create_token({"id": user.id, "email": user.email , "role": user.role})
     return JSONResponse({
         "message": "lawyer  Logged In Successfully",
-        "token:": token,
+        "token": token,
         "status_code": status.HTTP_200_OK,
     })
 
@@ -100,7 +100,7 @@ async def register(lawyerSchema: LawyerUserSchemaForm = Depends() ,
                      certificat: UploadFile = File(...), 
                    db = Depends(get_db)):
     # try:
-        print(lawyerSchema)
+        print(lawyerSchema.schedule)
 
         
         cast_array(

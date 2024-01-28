@@ -34,8 +34,11 @@ def get_user_appointements(db: Session, user_id, skip: int = 0, limit: int = 100
 
 
 
-def check_appointement(db: Session, lawyer_id, user_id) ->  bool:
+def check_appointement_with_user(db: Session, lawyer_id, user_id) ->  bool:
     return db.query(Appointement).filter(Appointement.lawyer_id == lawyer_id).filter(Appointement.user_id == user_id).first() != None
+
+def check_appointement_with_lawyer(db: Session,appointementSchema:AppointementSchema) ->  bool:
+    return db.query(Appointement).filter(Appointement.lawyer_id == appointementSchema.lawyer_id).filter(Appointement.date == appointementSchema.date).filter(Appointement.time == appointementSchema.time).first() != None
 
 def get_appointement_by_id(db: Session, appointement_id: int) -> Appointement:
     return db.query(Appointement).filter(Appointement.id == appointement_id).first()

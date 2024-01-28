@@ -100,8 +100,6 @@ async def register(lawyerSchema: LawyerUserSchemaForm = Depends() ,
                      certificat: UploadFile = File(...), 
                    db = Depends(get_db)):
     # try:
-        print(lawyerSchema.schedule)
-
         
         cast_array(
              [

@@ -1,7 +1,8 @@
--- Active: 1701266548715@@127.0.0.1@3306@genie
+-- Active: 1706424005276@@bdslyd28tdfsaxrg5two-mysql.services.clever-cloud.com@3306@bdslyd28tdfsaxrg5two
 -- SELECT * FROM `user`;
 
 -- --  get lawyer
+
 
 
 SELECT * FROM lawyer
@@ -132,24 +133,24 @@ SELECT * FROM lawyer
 
 -- --  insert some categories
 -- -- this values "Droit administratif", "Droit bancaire", "Droit civil", "Droit commercial", "Droit de l'environnement", "Droit de l'immobilier", "Droit de la consommation", "Droit de la santé", "Droit des assurances", "Droit des entreprises", "Droit des transports", "Droit du sport", "Droit du travail", "Droit familial", "Droit pénal", "Droit routier"
--- INSERT INTO categorie (id , name)
--- VALUES
---     (1, 'Droit administratif'),
---     (2, 'Droit bancaire'),
---     (3, 'Droit civil'),
---     (4, 'Droit commercial'),
---     (5, 'Droit de l\'environnement'),
---     (6, 'Droit de l\'immobilier'),
---     (7, 'Droit de la consommation'),
---     (8, 'Droit de la santé'),
---     (9, 'Droit des assurances'),
---     (10, 'Droit des entreprises'),
---     (11, 'Droit des transports'),
---     (12, 'Droit du sport'),
---     (13, 'Droit du travail'),
---     (14, 'Droit familial'),
---     (15, 'Droit pénal'),
---     (16, 'Droit routier');
+INSERT INTO categorie (id , name)
+VALUES
+    (1, 'Droit administratif'),
+    (2, 'Droit bancaire'),
+    (3, 'Droit civil'),
+    (4, 'Droit commercial'),
+    (5, 'Droit de l\'environnement'),
+    (6, 'Droit de l\'immobilier'),
+    (7, 'Droit de la consommation'),
+    (8, 'Droit de la santé'),
+    (9, 'Droit des assurances'),
+    (10, 'Droit des entreprises'),
+    (11, 'Droit des transports'),
+    (12, 'Droit du sport'),
+    (13, 'Droit du travail'),
+    (14, 'Droit familial'),
+    (15, 'Droit pénal'),
+    (16, 'Droit routier');
 
 
 -- -- get the categories

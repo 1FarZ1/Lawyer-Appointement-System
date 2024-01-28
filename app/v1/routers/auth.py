@@ -119,6 +119,9 @@ async def register(lawyerSchema: LawyerUserSchemaForm = Depends() ,
                 float   
         )
 
+        ## trim all the fields with  a loop
+        for field in lawyerSchema.__fields_set__:
+            lawyerSchema[field] = lawyerSchema[field].strip()
 
         isUserExist =   userRepo.get_user_by_email(lawyerSchema.email,db)   
         if isUserExist :

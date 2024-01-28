@@ -1,3 +1,0 @@
-1. Add Filtering to The Search[x]
-2. ADD lawyer Time 
-3. do the docker 

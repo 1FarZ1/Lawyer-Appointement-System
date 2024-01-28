@@ -1,6 +1,2 @@
-
-.env
 __pycache__
-
-*.env
-*.pyc
+mysql

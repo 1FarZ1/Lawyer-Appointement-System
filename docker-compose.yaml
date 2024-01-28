@@ -1,13 +1,52 @@
-version : '3'
+# version : '3'
 
-services:
-  web:
-    build: .
-    command: sh -c "uvicorn main:app --reload --port=8000 --host=0.0.0.0"
-    ports:
-      - 8000:8000
-    volumes:
-      - .:/app
+# services:
+#   web:
+#     build: .
+#     command: sh -c "uvicorn main:app --reload --port=8000 --host=0.0.0.0"
+#     ports:
+#       - 8000:8000
+#     volumes:
+#       - .:/app
 
-  # mysql:
+#   # mysql:
     
+
+
+version: '3.8'
+services:
+  fast-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_HOST=172.18.0.1
+      - DB_NAME=genie
+      - DB_PORT=3306
+      # - JWT_SECRET_KEY=secret
+      # - ACCESS_TOKEN_EXPIRE_HOURS=24
+      # - GOOGLE_CLIENT_ID=973975745540-bjlvhrvn1qusqq785l1i3cklkab9gp4f.apps.googleusercontent.com
+      # - GOOGLE_CLIENT_SECRET=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
+      # - GOOGLE_REDIRECT_URL=http://localhost:8000/auth/redirect
+    depends_on:
+      - db
+    networks:
+      - dzmouhami-network
+  db:
+    image: 'mysql:5.7'
+    environment:
+      - MYSQL_DATABASE=genie
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - '3300:3306'
+    expose:
+      - 3306
+    volumes:
+      - './mysql:/var/lib/mysql'
+    networks:
+      - dzmouhami-network
+networks:
+  dzmouhami-network:
+    driver: bridge

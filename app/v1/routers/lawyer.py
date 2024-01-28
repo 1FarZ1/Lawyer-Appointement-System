@@ -28,6 +28,19 @@ class ApproveSchema(BaseModel):
 
 
     
+@router.patch("/response")
+async def approve_lawyer(approaveSchema:ApproveSchema,db=Depends(get_db)):
+
+#     check_permission(request.state.user,[
+#         RoleEnum.ADMIN
+# ])
+    lawyer:Lawyer = lawyerRepo.get_lawyer_by_id(db,lawyer_id=approaveSchema.id)
+    if not lawyer:
+        raise HTTPException(
+            status_code=404, detail="Lawyer not found"
+        )
+    result =  await lawyerRepo.change_status(db,approaveSchema.id, StatusEnum.APPROVED if approaveSchema.is_Approved else StatusEnum.REJECTED)
+    return result
 
 
 
@@ -52,6 +65,7 @@ async def get_lawyer_schedule(request:Request,db = Depends(get_db)):
 
     result = lawyerRepo.get_lawyer_schedules(db,lawyer_id=laywer.id)
     formatted_schedules = []
+    
 
     for schedule in result:
         start_time = datetime.strptime(schedule.start_time, "%H:%M:%S")
@@ -113,19 +127,6 @@ async def get_lawyer_categories(
 
 
 
-@router.patch("/response")
-async def approve_lawyer(request:Request,approaveSchema:ApproveSchema,db=Depends(get_db)):
-
-    check_permission(request.state.user,[
-        RoleEnum.ADMIN
-])
-    lawyer:Lawyer = lawyerRepo.get_lawyer_by_id(db,lawyer_id=approaveSchema.id)
-    if not lawyer:
-        raise HTTPException(
-            status_code=404, detail="Lawyer not found"
-        )
-    result =  await lawyerRepo.change_status(db,approaveSchema.id, StatusEnum.APPROVED if approaveSchema.is_Approved else StatusEnum.REJECTED)
-    return result
 
 
 class LawyerUpdateSchema(BaseModel):
@@ -137,7 +138,7 @@ class LawyerUpdateSchema(BaseModel):
     image: Optional[str] = None
     experience: Optional[str] = None
 
-@router.patch("/lawyer/update")
+@router.patch("/update/lawyer")
 def update_lawyer_profile(request:Request,lawyer:LawyerUpdateSchema,db=Depends(get_db)):
     check_permission(request.state.user,[
         RoleEnum.LAWYER

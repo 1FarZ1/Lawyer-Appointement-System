@@ -37,7 +37,7 @@ async def get_users(
     sort: Optional[str] = None,  
     db = Depends(get_db),
 ):
-    await check_permission(user= request.state.user,permission=[RoleEnum.USER,RoleEnum.LAWYER,RoleEnum.ADMIN])
+    # await check_permission(user= request.state.user,permission=[RoleEnum.USER,RoleEnum.LAWYER,RoleEnum.ADMIN])
     result:List[User] = userRepository.get_all_users(
         db,page, pageSize, sort
     )

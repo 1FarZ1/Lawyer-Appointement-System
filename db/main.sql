@@ -1,4 +1,4 @@
--- Active: 1706424005276@@bdslyd28tdfsaxrg5two-mysql.services.clever-cloud.com@3306@bdslyd28tdfsaxrg5two
+-- Active: 1698948517192@@bmlrstyprbhu5tvpykrk-mysql.services.clever-cloud.com@3306@bmlrstyprbhu5tvpykrk
 -- SELECT * FROM `user`;
 
 -- --  get lawyer
@@ -228,3 +228,9 @@ VALUES
 -- SELECT * FROM reviews
 
 -- -- view all the tables
+
+
+
+--- delete all orders id from 29 to 51 from table order 
+--@block
+DELETE FROM order WHERE id = 29;

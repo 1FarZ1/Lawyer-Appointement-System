@@ -13,20 +13,19 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="!itsasecret")
 origins = [
-    "*",
-    "http://192.168.43.176:8001/",
-    ##"http://127.0.0.1:5500/",
+    "http://localhost",
+    "http://localhost:5050",
+    "http://192.168.43.5",
+    "*"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["POST", "GET", "PUT","PATCH","DELETE","OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
-
 )
-
 
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
@@ -38,24 +37,33 @@ non_authenticated_routes = [
     "/api/lawyers/pending",
     "/api/lawyers/categories",
     "/api/lawyers/highest_rated",
-    "/api/lawyers/accepeted"
+    "/api/lawyers/accepeted",
+    "/api/users/"
+    "/api/lawyers/",
     
 ]
+
+authenticated_routes= [
+    "/api/reviews/add"
+]
+
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     print(request.url.path)
-    if request.url.path in non_authenticated_routes or request.url.path.startswith(
-        (
-            "/api/location/",
-            "/api/auth/",
-            "/uploads/",
-            "/api/lawyers/lawyer",
-            "/api/reviews/",
-
-        )
-    ) :
-        response = await call_next(request)
-        return response
+    if not (request.url.path  == "/api/lawyers/update/lawyer") :
+        if     request.url.path in non_authenticated_routes or request.url.path.startswith(
+            (
+                "/api/location/",
+                "/api/auth/",
+                "/uploads/",
+                "/api/lawyers/lawyer/",
+                "/api/reviews/lawyer/",
+                "/api/lawyers/",
+            )
+        ) :
+            print("non authenticated route  : "  + request.url.path) 
+            response = await call_next(request)
+            return response
     token = request.headers.get("Authorization")
     print(token)
     token = token.split(" ")[1] if token else None

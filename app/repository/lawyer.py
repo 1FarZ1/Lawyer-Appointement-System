@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.enums import StatusEnum
 from app.models import Categorie, Lawyer, User
 from app.schemas import LawyerUserSchema
-from app.v1.routers.lawyer import LawyersSearchFilter
+from app.v1.routers.lawyer import LawyerUpdateSchema, LawyersSearchFilter
 
 
 
@@ -109,3 +109,21 @@ def get_lawyer_schedules(db:Session,lawyer_id):
     lawyer:Lawyer = db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
     return lawyer.lawyer_schedule
 
+
+
+
+## update lawyer profile
+
+def update_lawyer_profile(db:Session,lawyer_id,lawyerSchema:LawyerUpdateSchema):
+    lawyer:Lawyer = db.query(Lawyer).filter(Lawyer.id == lawyer_id).first()
+    ## only changed the fields that are not null
+    lawyer.name = lawyerSchema.name or lawyer.name
+    lawyer.phone = lawyerSchema.phone or lawyer.phone
+    lawyer.address = lawyerSchema.address or lawyer.address
+    lawyer.password = lawyerSchema.password or lawyer.password    
+    lawyer.image = lawyerSchema.image or lawyer.image
+
+
+    db.commit()
+    db.refresh(lawyer)
+    return lawyer

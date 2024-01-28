@@ -3,12 +3,13 @@ from urllib.parse import urlencode
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile,status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+import requests
 from app.enums import RoleEnum, StatusEnum
 from app.schemas import CheckEmailSchema, LawyerUserSchemaForm, LoginSchema, GoogleUserSchema,LawyerUserSchema,LUserSchema,LawyerInfoSchema
 from app.models import User
 from authlib.integrations.starlette_client import OAuth, OAuthError  
 from starlette.requests import Request
-from app.config.database import get_db
+from app.config.database import SessionLocal, get_db
 from app.repository import user as userRepo,auth as authRepo, lawyer as lawyerRepo
 from app.utils.jwt import JWT
 from app.utils.utils import Utils
@@ -119,9 +120,9 @@ async def register(lawyerSchema: LawyerUserSchemaForm = Depends() ,
                 float   
         )
 
-        ## trim all the fields with  a loop
-        for field in lawyerSchema.__fields_set__:
-            lawyerSchema[field] = lawyerSchema[field].strip()
+        # ## trim all the fields with  a loop
+        # for field in lawyerSchema.__fields_set__:
+        #     lawyerSchema[field] = lawyerSchema[field].strip()
 
         isUserExist =   userRepo.get_user_by_email(lawyerSchema.email,db)   
         if isUserExist :
@@ -211,6 +212,36 @@ async def check_email(chekEmailSchema: CheckEmailSchema, db = Depends(get_db)):
 
 
 
+@router.get("/google-auth")
+async def login_google():
+    return {
+        "url": f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={GOOGLE_CLIENT_ID}&redirect_uri={GOOGLE_REDIRECT_URL}&scope=openid%20profile%20email&access_type=offline"
+    }
+
+@router.get("/google-auth-callback")
+async def auth_google(code: str, db: SessionLocal = Depends(get_db)):
+    token_url = "https://accounts.google.com/o/oauth2/token"
+    data = {
+        "code": code,
+        "client_id": GOOGLE_CLIENT_ID,
+        "client_secret": GOOGLE_CLIENT_SECRET,
+        "redirect_uri": GOOGLE_REDIRECT_URL,
+        "grant_type": "authorization_code",
+    }
+    response = requests.post(token_url, data=data)
+    access_token = response.json().get("access_token")
+    user_info = requests.get("https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {access_token}"})
+    user_info = user_info.json()
+    # create user if not exists
+    # userExists = user.get_by_email(db, user_info["email"])
+    # if not userExists:
+    #     newUser = user.create(db, UserRegisterSchema(email=user_info["email"], nom=user_info["family_name"], prenom=user_info["given_name"]))
+    #     token = JWT.create_token({"id": newUser.id, "email": newUser.email, "role": f"{newUser.role}"})
+    #     return {"token": token}
+    # token = JWT.create_token({"id": userExists.id, "email": userExists.email, "role": f"{userExists.role}"})
+    # return RedirectResponse(f"http://localhost:5173/login?token={token}")
+
+    return user_info
 
 
 @router.get("/google-auth")

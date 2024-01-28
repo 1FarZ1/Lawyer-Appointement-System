@@ -13,8 +13,8 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="!itsasecret")
 origins = [
+    "*",
     "http://192.168.43.176:8001/",
-    "*"
     ##"http://127.0.0.1:5500/",
 ]
 

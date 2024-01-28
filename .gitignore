@@ -161,3 +161,9 @@ cython_debug/
 
 
 mysql
+
+
+/uploads/
+uploads/*
+uploads/**/*
+uploads/**/**/*

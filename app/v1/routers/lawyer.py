@@ -152,7 +152,7 @@ def update_lawyer_profile(request:Request,lawyer:LawyerUpdateSchema,db=Depends(g
 
 
 
-@router.get("/{id}")
+@router.get("/lawyer/{id}")
 async def get_lawyer(id: int, db = Depends(get_db)):
     result:Lawyer = lawyerRepo.get_lawyer_by_id(db,id)
     if not result:

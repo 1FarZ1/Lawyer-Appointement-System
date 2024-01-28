@@ -48,9 +48,6 @@ async def auth_middleware(request: Request, call_next):
             "/api/location/",
             "/api/auth/",
             "/uploads/",
-            "/api/lawyers/",
-            "/api/reviews/lawyer",
-
         )
     ) :
         response = await call_next(request)

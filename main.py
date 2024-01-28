@@ -49,7 +49,7 @@ async def auth_middleware(request: Request, call_next):
             "/api/auth/",
             "/uploads/",
             "/api/lawyers/lawyer",
-            "/api/ratings/",
+            "/api/reviews/",
 
         )
     ) :

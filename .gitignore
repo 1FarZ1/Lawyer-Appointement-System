@@ -167,3 +167,11 @@ mysql
 uploads/*
 uploads/**/*
 uploads/**/**/*
+
+
+## ignore cache
+.cache
+.cache/*
+
+__pycache__/
+__pycache__

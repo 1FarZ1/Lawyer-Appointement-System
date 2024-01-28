@@ -38,6 +38,7 @@ non_authenticated_routes = [
     "/api/lawyers/pending",
     "/api/lawyers/categories",
     "/api/lawyers/highest_rated",
+    "/api/lawyers/accepeted"
     
 ]
 @app.middleware("http")

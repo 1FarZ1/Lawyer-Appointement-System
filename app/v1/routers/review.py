@@ -77,9 +77,5 @@ async def get_reviews(request:Request, id , db: Session = Depends(get_db)):
             status_code=404, detail="Lawyer not found"
         )   
     result:Review = reviewRepository.get_lawyer_reviews(db,id)
-    if not result:
-        raise HTTPException(
-            status_code=404, detail="Review not found"
-        )
     return result
 

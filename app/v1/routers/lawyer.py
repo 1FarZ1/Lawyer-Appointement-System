@@ -113,7 +113,7 @@ async def get_lawyer_categories(
 
 
 
-@router.patch("/lawyer/response")
+@router.patch("/response")
 async def approve_lawyer(request:Request,approaveSchema:ApproveSchema,db=Depends(get_db)):
 
     check_permission(request.state.user,[

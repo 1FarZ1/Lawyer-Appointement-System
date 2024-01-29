@@ -5,7 +5,7 @@
 
 ## Features
 
-## EndPoints
+## Api Endpoints
 
 ### Authentication Endpoints
 

@@ -97,7 +97,42 @@
 
 - **get all categories**: `GET /api/categories`
 
-## Tips
+## Installation
+
+# Installation
+
+To run the Dz-mouhami FastAPI application locally, follow these steps:
+
+1. **Clone the Repository:**
+
+- git clone <https://github.com/yourusername/dz-mouhami.git>
+
+2. **Navigate to the Project Directory:**
+
+- cd dz-mouhami
+
+3. **Install Dependencies:**
+
+- pip install -r requirements.txt
+
+4. **Set Up Environment Variables:**
+
+- Create a `.env` file in the root directory.
+- Add necessary environment variables like database connection details, API keys, etc.
+
+5. **Run the Application:**
+
+- uvicorn main:app --reload
+
+6. **Access the API:**
+
+- Once the server is running, access the API endpoints using a tool like Postman or your web browser.
+
+7. **Start Developing:**
+
+- You're now ready to start developing and testing your FastAPI application!
+
+Make sure to customize environment variables and configurations based on your specific setup and r
 
 ## Links
 

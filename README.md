@@ -132,8 +132,10 @@ To run the Dz-mouhami FastAPI application locally, follow these steps:
 
 - You're now ready to start developing and testing your FastAPI application!
 
-Make sure to customize environment variables and configurations based on your specific setup and r
+Make sure to customize environment variables and configurations based on your specific setup
 
 ## Links
+
+- No Links For Now
 
 ### Written by Fares Bekkouche

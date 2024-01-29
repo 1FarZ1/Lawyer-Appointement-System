@@ -5,6 +5,46 @@
 
 ## Features
 
+- **Authentication**:
+  - Login with Google OAuth
+  - Login for lawyers
+  - Sign up for new lawyers
+  - Check email availability
+  
+- **User Management**:
+  - Retrieve all users
+  - Retrieve user profile
+  - Delete user account
+  - Update user email, profile picture, and password
+  
+- **Appointment Management**:
+  - Create appointments
+  - Retrieve lawyer appointments
+  - Retrieve pending appointments for lawyers
+  - Retrieve all appointments
+  - Respond to appointments by lawyers
+  
+- **Review Management**:
+  - Retrieve reviews of a lawyer
+  - Add a review for a lawyer
+  - Retrieve reviews given by a lawyer
+  
+- **Lawyer Management**:
+  - Retrieve highest-rated lawyers
+  - Retrieve details of a lawyer
+  - Retrieve schedule of a lawyer
+  - Retrieve all lawyers
+  - Retrieve accepted and pending lawyers
+  - Update lawyer profile
+  - Respond to lawyer requests
+  
+- **Location Management**:
+  - Retrieve list of wilayas
+  - Retrieve list of cities within a wilaya
+  
+- **Category Management**:
+  - Retrieve all available categories for lawyers
+
 ## Api Endpoints
 
 ### Authentication Endpoints

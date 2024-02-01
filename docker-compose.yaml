@@ -12,11 +12,6 @@ services:
       - DB_HOST=db
       - DB_NAME=genie
       - DB_PORT=3306
-      # - JWT_SECRET_KEY=secret
-      # - ACCESS_TOKEN_EXPIRE_HOURS=24
-      # - GOOGLE_CLIENT_ID=973975745540-bjlvhrvn1qusqq785l1i3cklkab9gp4f.apps.googleusercontent.com
-      # - GOOGLE_CLIENT_SECRET=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
-      # - GOOGLE_REDIRECT_URL=http://localhost:8000/auth/redirect
     depends_on:
       - db
 

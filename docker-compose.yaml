@@ -1,16 +1,3 @@
-# version : '3'
-
-# services:
-#   web:
-#     build: .
-#     command: sh -c "uvicorn main:app --reload --port=8000 --host=0.0.0.0"
-#     ports:
-#       - 8000:8000
-#     volumes:
-#       - .:/app
-
-#   # mysql:
-    
 
 
 version: '3.8'
@@ -20,9 +7,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DB_USERNAME=root
-      - DB_PASSWORD=root
-      - DB_HOST=172.18.0.1
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_HOST=db
       - DB_NAME=genie
       - DB_PORT=3306
       # - JWT_SECRET_KEY=secret
@@ -32,6 +19,8 @@ services:
       # - GOOGLE_REDIRECT_URL=http://localhost:8000/auth/redirect
     depends_on:
       - db
+
+    restart: always
     networks:
       - dzmouhami-network
   db:
@@ -39,8 +28,9 @@ services:
     environment:
       - MYSQL_DATABASE=genie
       - MYSQL_ROOT_PASSWORD=root
+    hostname: db
     ports:
-      - '3300:3306'
+      - '3306:3306'
     expose:
       - 3306
     volumes:

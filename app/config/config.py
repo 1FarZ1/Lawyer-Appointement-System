@@ -19,4 +19,5 @@ DB_PORT = os.environ.get("DB_PORT")
 
 SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
  
- 
+print("TESTING URL ")
+print(SQLALCHEMY_DATABASE_URL)
